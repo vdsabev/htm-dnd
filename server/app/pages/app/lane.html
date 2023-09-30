@@ -1,15 +1,15 @@
 <div
-  class="min-w-[var(--lane-width)] border rounded w-[var(--lane-width)] bg-slate-50"
+  class="flex flex-col min-w-[var(--lane-width)] border rounded w-[var(--lane-width)] bg-slate-100 px-3 shadow-inner"
 >
-  <div class="p-3 font-bold border-b bg-slate-100">
-    <%= name %>
-  </div>
-
-  <div class="px-3">
-    <%- include('dropzone.html') %>
-    <% for (const task of tasks) { %>
-      <%- include('task.html', { task }) %>
-      <%- include('dropzone.html') %>
-    <% } %>
-  </div>
+  <%- include('dropzone.html', {
+    children: `
+      <div class="pt-2 font-bold">
+        ${name} <span class="inline-block px-2 rounded-full bg-slate-200">${tasks.length}</span>
+      </div>
+    `,
+  }) %>
+  <% for (const task of tasks) { %>
+    <%- include('task.html', { task }) %>
+    <%- include('dropzone.html', { children: '' }) %>
+  <% } %>
 </div>

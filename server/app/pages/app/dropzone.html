@@ -6,8 +6,15 @@
     after:rounded-sm
     [&[data-dragenter]]:after:bg-gradient-to-r
     after:from-sky-700 after:via-sky-400 after:to-sky-700
+    last:h-full
   "
-  ondragover="event.preventDefault()"
+  ondragover="
+    // Set dragover to trigger dropzone when hovering over child elements
+    event.preventDefault();
+    if (!this.hasAttribute('data-dragenter')) { // Prevents flickering
+      this.setAttribute('data-dragenter', true);
+    }
+  "
   ondragenter="
     event.preventDefault();
     event.stopPropagation();
@@ -18,4 +25,4 @@
     this.removeAttribute('data-dragenter');
   "
   ondrop="this.removeAttribute('data-dragenter')"
-></div>
+><%- children %></div>

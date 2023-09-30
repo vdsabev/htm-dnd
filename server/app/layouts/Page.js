@@ -4,7 +4,7 @@ const html = require('../html');
 module.exports = ({ head = '', body = '' } = {}) =>
   ejs.renderFile(`${__dirname}/layout.html`, {
     title: 'htmx dnd',
-    favicon: html`data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🫳</text></svg>`,
+    favicon: html`data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🖐️</text></svg>`,
     head: html`
       ${head}
       <link href="/style.css" rel="stylesheet" />

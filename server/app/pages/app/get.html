@@ -1,4 +1,4 @@
-<main class="flex h-full gap-4 p-4 lanes">
+<main class="flex h-full gap-4 p-4 app-lanes">
   <% const lanes = [
     { name: '⛏️ To Do', tasks: ['Ignore the haters'] },
     { name: '⏳ In Progress', tasks: ['Code with htmx/hypermedia\n(same thing)'] },
@@ -9,12 +9,12 @@
     <%- include('lane.html', lane) %>
   <% } %>
 
-  <div class="add-lane min-w-[var(--lane-width)]">
+  <div class="min-w-[var(--lane-width)]">
     <button
       type="button"
-      class="self-start p-3 bg-white border rounded text-left hover:pr-[calc(var(--lane-width)-2.5rem)] hover:transition-[padding]"
+      class="self-start p-3 bg-white border rounded text-left hover:pr-[calc(var(--lane-width)-2.5rem)] transition-[padding]"
       onclick="
-        this.closest('.lanes').insertBefore(this.nextElementSibling.content.cloneNode(true), this.parentElement);
+        this.closest('.app-lanes').insertBefore(this.nextElementSibling.content.cloneNode(true), this.parentElement);
         this.scrollIntoView({ behavior: 'smooth' });
       "
     >

@@ -1,9 +1,23 @@
 <div
-  class="px-3 py-2 whitespace-pre bg-white border rounded-sm select-none cursor-grab active:cursor-grabbing"
+  class="px-3
+    py-2
+    whitespace-pre
+    bg-white
+    border
+    rounded-sm
+    select-none
+    cursor-grab
+    active:cursor-grabbing
+    outline-dashed
+    outline-transparent
+    active:outline-sky-700
+    transition-[outline]
+  "
   draggable
   ondragstart="
     event.stopPropagation(); // Prevent parent node from receiving child events
     event.dataTransfer.setData('Text', '<%= task %>');
     event.dataTransfer.effectAllowed = 'move';
   "
+  ondragend=""
 ><%= task %></div>

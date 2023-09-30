@@ -13,7 +13,10 @@
     <button
       type="button"
       class="self-start p-3 bg-white border rounded text-left hover:pr-[calc(var(--lane-width)-2.5rem)] hover:transition-[padding]"
-      onclick="this.closest('.lanes').insertBefore(this.nextElementSibling.content.cloneNode(true), this.parentElement)"
+      onclick="
+        this.closest('.lanes').insertBefore(this.nextElementSibling.content.cloneNode(true), this.parentElement);
+        this.scrollIntoView({ behavior: 'smooth' });
+      "
     >
       ➕
     </button>

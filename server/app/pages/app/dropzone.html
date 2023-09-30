@@ -27,9 +27,15 @@
   ondrop="
     this.removeAttribute('data-dragenter');
 
-    window.elementBeingDragged.parentElement.removeChild(window.elementBeingDragged);
-    this.after(window.elementBeingDragged);
+    if (![window.taskBeingDragged.previousElementSibling, window.taskBeingDragged.nextElementSibling].includes(this)) {
+      const taskDropzone = window.taskBeingDragged.nextElementSibling;
+      taskDropzone.parentElement.removeChild(taskDropzone);
+      window.taskBeingDragged.parentElement.removeChild(window.taskBeingDragged);
 
-    window.elementBeingDragged = null;
+      this.after(this.cloneNode(false));
+      this.after(window.taskBeingDragged);
+    }
+
+    window.taskBeingDragged = null;
   "
 ><%- children %></div>

@@ -24,5 +24,12 @@
     event.stopPropagation();
     this.removeAttribute('data-dragenter');
   "
-  ondrop="this.removeAttribute('data-dragenter')"
+  ondrop="
+    this.removeAttribute('data-dragenter');
+
+    window.elementBeingDragged.parentElement.removeChild(window.elementBeingDragged);
+    this.after(window.elementBeingDragged);
+
+    window.elementBeingDragged = null;
+  "
 ><%- children %></div>

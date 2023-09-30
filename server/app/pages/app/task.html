@@ -1,1 +1,9 @@
-<div><%= task %></div>
+<div
+  class="px-3 py-2 whitespace-pre bg-white border rounded-sm select-none cursor-grab active:cursor-grabbing"
+  draggable
+  ondragstart="
+    event.stopPropagation(); // Prevent parent node from receiving child events
+    event.dataTransfer.setData('Text', '<%= task %>');
+    event.dataTransfer.effectAllowed = 'move';
+  "
+><%= task %></div>

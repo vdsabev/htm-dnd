@@ -1,17 +1,25 @@
-<main class="flex h-full gap-4 p-4">
+<main class="flex h-full gap-4 p-4 lanes">
   <% const lanes = [
-    { name: '💌 Inbox', tasks: [] },
-    { name: '⛏️ To Do', tasks: [] },
-    { name: '⏳ In Progress', tasks: [] },
-    { name: '✅ Done', tasks: ['Drink coffee'] },
+    { name: '⛏️ To Do', tasks: ['Ignore the haters'] },
+    { name: '⏳ In Progress', tasks: ['Code with htmx/hypermedia\n(same thing)'] },
+    { name: '✅ Done', tasks: ['Drink coffee', 'Stretch', 'Wake up'] },
   ]; %>
+
   <% for (const lane of lanes) { %>
     <%- include('lane.html', lane) %>
   <% } %>
-  <button
-    type="button"
-    class="self-start px-4 py-3 bg-white border rounded hover:pr-[calc(var(--lane-width)-1em)] text-left transition-[padding]"
-  >
-    ➕
-  </button>
+
+  <div class="add-lane min-w-[var(--lane-width)]">
+    <button
+      type="button"
+      class="self-start p-3 bg-white border rounded text-left hover:pr-[calc(var(--lane-width)-2.5rem)] hover:transition-[padding]"
+      onclick="this.closest('.lanes').insertBefore(this.nextElementSibling.content.cloneNode(true), this.parentElement)"
+    >
+      ➕
+    </button>
+
+    <template>
+      <%- include('lane.html', { name: 'New Lane', tasks: [] }) %>
+    </template>
+  </div>
 </main>

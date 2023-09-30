@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  functions = "server/"
+  publish = "public/"
+
+[dev]
+  port = 3000
+
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/app"
+  status = 200

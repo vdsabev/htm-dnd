@@ -1,0 +1,19 @@
+{
+  "private": true,
+  "name": "htmx-dnd",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "nodemon --watch server --ext html,js,css --exec \"npm run build && netlify dev --no-open\"",
+    "build": "npm run build.style",
+    "build.style": "tailwindcss -i ./server/app/style.css -o ./public/style.css"
+  },
+  "devDependencies": {
+    "netlify-cli": "16.3.3",
+    "nodemon": "3.0.1",
+    "postcss-import": "15.1.0",
+    "tailwindcss": "3.3.3"
+  },
+  "dependencies": {
+    "ejs": "3.1.9"
+  }
+}

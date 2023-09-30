@@ -1,0 +1,17 @@
+<main class="flex h-full gap-4 p-4">
+  <% const lanes = [
+    { name: '💌 Inbox', tasks: [] },
+    { name: '⛏️ To Do', tasks: [] },
+    { name: '⏳ In Progress', tasks: [] },
+    { name: '✅ Done', tasks: ['Drink coffee'] },
+  ]; %>
+  <% for (const lane of lanes) { %>
+    <%- include('lane.html', lane) %>
+  <% } %>
+  <button
+    type="button"
+    class="self-start px-4 py-3 bg-white border rounded hover:pr-[calc(var(--lane-width)-1em)] text-left transition-[padding]"
+  >
+    ➕
+  </button>
+</main>

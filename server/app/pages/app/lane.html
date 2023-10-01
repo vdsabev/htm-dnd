@@ -19,9 +19,9 @@
     ×
   </button>
 
-  <%- include('dropzone.html', { lane, laneIndex, task: null, taskIndex: 0 }) %>
+  <%- include('dropzone.html', { data, lane, laneIndex, task: null, taskIndex: 0 }) %>
   <% lane.tasks.forEach((task, taskIndex) => { %>
     <%- include('task.html', { lane, laneIndex, task, taskIndex }) %>
-    <%- include('dropzone.html', { lane, laneIndex, task, taskIndex: taskIndex + 1 }) %>
+    <%- include('dropzone.html', { data, lane, laneIndex, task, taskIndex: taskIndex + 1 }) %>
   <% }); %>
 </div>

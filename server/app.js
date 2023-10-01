@@ -10,12 +10,14 @@ exports.handler = async (request, context) => {
   request.path = request.path.replace(/^\//, ''); // Normalize path by removing starting slash
 
   // Task board
-  if (request.path && request.path.split('/')[0] !== 'pages') {
+  if (request.path) {
+    const [dataId, laneId] = request.path.split('/');
+
     if (request.httpMethod === 'GET') {
       return response.html(
         await Page({
           body: await ejs.renderFile(`${__dirname}/app/pages/app/get.html`, {
-            data: await db.getDataForId(request.path),
+            data: await db.getDataForId(dataId),
             constants,
           }),
         })
@@ -23,48 +25,33 @@ exports.handler = async (request, context) => {
     }
 
     if (request.httpMethod === 'POST') {
-      try {
-        const updatedData = await db.addNewLane(request.path);
-        console.log(updatedData);
-        return response.html(
-          await ejs.renderFile(`${__dirname}/app/pages/app/get.html`, {
-            data: updatedData,
-            constants,
-          })
-        );
-      } catch (error) {
-        console.error(error);
-        return response.badRequest();
-      }
+      const updatedData = await db.addNewLane(dataId);
+      return response.html(
+        await ejs.renderFile(`${__dirname}/app/pages/app/get.html`, {
+          data: updatedData,
+          constants,
+        })
+      );
     }
 
     if (request.httpMethod === 'PUT') {
-      try {
-        const body = JSON.parse(request.body);
-        await db.setDataForId(request.path, body);
-        return response.noContent();
-      } catch (error) {
-        console.error(error);
-        return response.badRequest();
-      }
+      const body = JSON.parse(request.body);
+      await db.setDataForId(dataId, body);
+      return response.noContent(); // TODO: Render page
+    }
+
+    if (request.httpMethod === 'DELETE') {
+      const updatedData = await db.deleteLane(dataId, laneId);
+      return response.html(
+        await ejs.renderFile(`${__dirname}/app/pages/app/get.html`, {
+          data: updatedData,
+          constants,
+        })
+      );
     }
   }
 
-  // Automatic page routes
-  try {
-    return response.html(
-      await ejs.renderFile(
-        `${__dirname}/app/${
-          request.path
-        }/${request.httpMethod.toLowerCase()}.html`
-      )
-    );
-  } catch (error) {
-    console.error(error);
-    return error.code === 'ENOENT'
-      ? response.notFound()
-      : response.internalServerError();
-  }
+  return response.notFound();
 };
 
 const response = {
@@ -77,28 +64,10 @@ const response = {
       body: Array.isArray(body) ? body.join('') : body,
     };
   },
-  noContent() {
-    return {
-      ...response.html('No Content'),
-      statusCode: 204,
-    };
-  },
-  badRequest() {
-    return {
-      ...response.html('Bad Request'),
-      statusCode: 400,
-    };
-  },
   notFound() {
     return {
       ...response.html('Not Found'),
       statusCode: 404,
-    };
-  },
-  internalServerError() {
-    return {
-      ...response.html('Internal Server Error'),
-      statusCode: 500,
     };
   },
 };

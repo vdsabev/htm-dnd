@@ -25,21 +25,35 @@ const connect = async function () {
 };
 
 module.exports = {
-  async getDataForId(/** @type {string} */ id) {
+  async getDataForId(/** @type {string} */ dataId) {
     const db = await connect();
-    return db.model('data').findById(id).lean();
+    return db.model('data').findById(dataId).lean();
   },
-  async setDataForId(/** @type {string} */ id, data) {
+  async setDataForId(/** @type {string} */ dataId, newData) {
     const db = await connect();
-    return db.model('data').updateOne({ _id: id }, data);
+    return db
+      .model('data')
+      .findOneAndUpdate({ _id: dataId }, newData, { new: true })
+      .lean();
   },
-  async addNewLane(/** @type {string} */ id) {
+  async addNewLane(/** @type {string} */ dataId) {
     const db = await connect();
     return db
       .model('data')
       .findOneAndUpdate(
-        { _id: id },
+        { _id: dataId },
         { $push: { lanes: constants.NEW_LANE } },
+        { new: true }
+      )
+      .lean();
+  },
+  async deleteLane(/** @type {string} */ dataId, /** @type {string} */ laneId) {
+    const db = await connect();
+    return db
+      .model('data')
+      .findOneAndUpdate(
+        { _id: dataId },
+        { $pull: { lanes: { _id: laneId } } },
         { new: true }
       )
       .lean();

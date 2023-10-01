@@ -7,15 +7,14 @@
     <button
       type="button"
       class="self-start p-3 bg-white border rounded text-left hover:pr-[calc(var(--lane-width)-2.5rem)] transition-[padding]"
-      hx-post="/<%= data._id %>"
-      hx-trigger="click"
-      hx-target="closest main"
-      hx-swap="outerHTML"
-      onclick="
-        // Optimistic update
+      hx-on::before-request="
+        // TODO: Handle request failure
         this.closest('main').insertBefore(this.nextElementSibling.content.cloneNode(true), this.parentElement);
         this.scrollIntoView({ behavior: 'smooth' });
       "
+      hx-post="/<%= data._id %>"
+      hx-swap="outerHTML"
+      hx-target="closest main"
     >
       ➕
     </button>

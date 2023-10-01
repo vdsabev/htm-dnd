@@ -11,6 +11,8 @@ exports.handler = async (request, context) => {
 
   // Task board
   if (request.path) {
+    // TODO: Create a new data record if the ID doesn't exist
+
     const [dataId, laneId] = request.path.split('/');
 
     // Get task page

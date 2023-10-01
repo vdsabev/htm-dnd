@@ -3,8 +3,7 @@ exports.parseFormData = (encodedQueryString) => {
 
   const pathValuePairs = encodedQueryString.split('&');
   pathValuePairs.forEach((pathValuePair) => {
-    const [encodedPath, value] = pathValuePair.split('=');
-    const path = decodeURIComponent(encodedPath);
+    const [path, value] = pathValuePair.split('=').map(decodeURIComponent);
     const arrayKeys = path.split('[]');
 
     let data = formData;

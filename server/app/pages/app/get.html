@@ -1,4 +1,4 @@
-<main class="flex h-full gap-4 p-4 app-lanes">
+<main class="flex h-full gap-4 p-4">
   <% data.lanes.forEach((lane) => { %>
     <%- include('lane.html', { lane, data }) %>
   <% }); %>
@@ -7,8 +7,13 @@
     <button
       type="button"
       class="self-start p-3 bg-white border rounded text-left hover:pr-[calc(var(--lane-width)-2.5rem)] transition-[padding]"
+      hx-post="/<%= data._id %>"
+      hx-trigger="click"
+      hx-target="closest main"
+      hx-swap="outerHTML"
       onclick="
-        this.closest('.app-lanes').insertBefore(this.nextElementSibling.content.cloneNode(true), this.parentElement);
+        // Optimistic update
+        this.closest('main').insertBefore(this.nextElementSibling.content.cloneNode(true), this.parentElement);
         this.scrollIntoView({ behavior: 'smooth' });
       "
     >
@@ -16,7 +21,7 @@
     </button>
 
     <template>
-      <%- include('lane.html', { lane: { name: 'New Lane', tasks: [] }, data }) %>
+      <%- include('lane.html', { lane: constants.NEW_LANE, data }) %>
     </template>
   </div>
 </main>

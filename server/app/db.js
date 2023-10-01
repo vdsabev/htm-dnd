@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const constants = require('./constants');
 
 /** @type {mongoose} */
 let connection = null;
@@ -31,5 +32,16 @@ module.exports = {
   async setDataForId(/** @type {string} */ id, data) {
     const db = await connect();
     return db.model('data').updateOne({ _id: id }, data);
+  },
+  async addNewLane(/** @type {string} */ id) {
+    const db = await connect();
+    return db
+      .model('data')
+      .findOneAndUpdate(
+        { _id: id },
+        { $push: { lanes: constants.NEW_LANE } },
+        { new: true }
+      )
+      .lean();
   },
 };

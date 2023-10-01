@@ -1,6 +1,7 @@
 const ejs = require('ejs');
 
 const Page = require('./app/layouts/Page');
+const constants = require('./app/constants');
 const db = require('./app/db');
 
 exports.handler = async (request, context) => {
@@ -15,16 +16,32 @@ exports.handler = async (request, context) => {
         await Page({
           body: await ejs.renderFile(`${__dirname}/app/pages/app/get.html`, {
             data: await db.getDataForId(request.path),
+            constants,
           }),
         })
       );
     }
 
+    if (request.httpMethod === 'POST') {
+      try {
+        const updatedData = await db.addNewLane(request.path);
+        console.log(updatedData);
+        return response.html(
+          await ejs.renderFile(`${__dirname}/app/pages/app/get.html`, {
+            data: updatedData,
+            constants,
+          })
+        );
+      } catch (error) {
+        console.error(error);
+        return response.badRequest();
+      }
+    }
+
     if (request.httpMethod === 'PUT') {
       try {
-        // TODO: Use `body` if it works
-        const { lanes } = JSON.parse(request.body);
-        await db.setDataForId(request.path, { lanes });
+        const body = JSON.parse(request.body);
+        await db.setDataForId(request.path, body);
         return response.noContent();
       } catch (error) {
         console.error(error);

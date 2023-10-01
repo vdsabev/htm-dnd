@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "vanilla-dnd",
+  "name": "htmx-dnd",
   "version": "1.0.0",
   "scripts": {
     "start": "nodemon --watch server --ext html,js,css --exec \"npm run build && netlify dev --no-open\"",
@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "ejs": "3.1.9",
-    "mongoose": "7.5.3"
+    "mongoose": "7.5.3",
+    "querystring": "0.2.1"
   }
 }

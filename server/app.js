@@ -9,14 +9,28 @@ exports.handler = async (request, context) => {
   request.path = request.path.replace(/^\//, ''); // Normalize path by removing starting slash
 
   // Task board
-  if (request.httpMethod === 'GET' && request.path && request.path.split('/')[0] !== 'pages') {
-    return response.html(
-      await Page({
-        body: await ejs.renderFile(`${__dirname}/app/pages/app/get.html`, {
-          data: await db.getDataForId(request.path),
-        }),
-      })
-    );
+  if (request.path && request.path.split('/')[0] !== 'pages') {
+    if (request.httpMethod === 'GET') {
+      return response.html(
+        await Page({
+          body: await ejs.renderFile(`${__dirname}/app/pages/app/get.html`, {
+            data: await db.getDataForId(request.path),
+          }),
+        })
+      );
+    }
+
+    if (request.httpMethod === 'PUT') {
+      try {
+        // TODO: Use `body` if it works
+        const { lanes } = JSON.parse(request.body);
+        await db.setDataForId(request.path, { lanes });
+        return response.noContent();
+      } catch (error) {
+        console.error(error);
+        return response.badRequest();
+      }
+    }
   }
 
   // Automatic page routes
@@ -44,6 +58,18 @@ const response = {
         'Content-Type': 'text/html',
       },
       body: Array.isArray(body) ? body.join('') : body,
+    };
+  },
+  noContent() {
+    return {
+      ...response.html('No Content'),
+      statusCode: 204,
+    };
+  },
+  badRequest() {
+    return {
+      ...response.html('Bad Request'),
+      statusCode: 400,
     };
   },
   notFound() {

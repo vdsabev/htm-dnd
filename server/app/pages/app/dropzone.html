@@ -38,9 +38,12 @@
       this.after(this.cloneNode(false));
       this.after(taskElement);
 
+      // `toString` replaces spaces with `+`, serialize manually
       fetch('/<%= data._id %>', {
         method: 'PUT',
-        body: new URLSearchParams(new FormData(this.closest('form'))).toString()
+        body: [...new URLSearchParams(new FormData(this.closest('form')))]
+          .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+          .join('&')
       }).then((response) => response.text())
         .then((html) => {
           this.closest('form').outerHTML = html;

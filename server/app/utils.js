@@ -14,24 +14,44 @@ exports.parseFormData = (encodedQueryString) => {
 
     let data = formData;
     arrayKeys.forEach((arrayKey, index) => {
-      const objectKeys = arrayKey.split('[').map((key) => key.replace(']', ''));
+      const objectKeys = arrayKey
+        .replace(/^\[/, '')
+        .replace(/\]$/, '')
+        .split(/\]?\[/);
+
+      // We have to go deeper 👀
       objectKeys.slice(0, -1).forEach((objectKey) => {
         data[objectKey] ??= {};
         data = data[objectKey];
       });
 
+      const key = objectKeys.at(-1);
+
+      // Initialize array
       if (index < arrayKeys.length - 1) {
-        data[objectKeys.at(-1)] ??= [];
-        data = data[objectKeys.at(-1)];
+        data[key] ??= [];
+        data = data[key];
         return;
       }
 
-      if (objectKeys.at(-1) === '') {
+      // Primitive array value
+      if (key === '') {
         data.push(value);
         return;
       }
 
-      data[objectKeys.at(-1)] = value;
+      if (Array.isArray(data)) {
+        if (data.length === 0 || data.at(-1)[key] !== undefined) {
+          data.push({ [key]: value });
+        }
+        data = data.at(-1);
+      }
+
+      if (data[key] === undefined) {
+        data[key] = value;
+      } else {
+        // TODO
+      }
     });
 
     // numberOfTimesProcessed[path] += 1;

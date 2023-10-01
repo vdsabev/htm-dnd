@@ -1,14 +1,11 @@
 exports.parseFormData = (encodedQueryString) => {
   const formData = {};
-  // const numberOfTimesProcessed = {};
 
   const pathValuePairs = encodedQueryString.split('&');
-  pathValuePairs.forEach((pathValuePair, index) => {
+  pathValuePairs.forEach((pathValuePair) => {
     const [encodedPath, value] = pathValuePair.split('=');
     const path = decodeURIComponent(encodedPath);
     const arrayKeys = path.split('[]');
-
-    // numberOfTimesProcessed[path] ??= 0;
 
     let data = formData;
     arrayKeys.forEach((arrayKey, index) => {
@@ -27,8 +24,13 @@ exports.parseFormData = (encodedQueryString) => {
 
       // Initialize array
       if (index < arrayKeys.length - 1) {
-        data[key] ??= [];
-        data = data[key];
+        if (Array.isArray(data)) {
+          data.at(-1)[key] ??= [];
+          data = data.at(-1)[key];
+        } else {
+          data[key] ??= [];
+          data = data[key];
+        }
         return;
       }
 
@@ -38,7 +40,7 @@ exports.parseFormData = (encodedQueryString) => {
         return;
       }
 
-      // Get relevant array element
+      // Get relevant array item
       if (Array.isArray(data)) {
         if (data.length === 0 || data.at(-1)[key] !== undefined) {
           data.push({ [key]: value });
@@ -49,8 +51,6 @@ exports.parseFormData = (encodedQueryString) => {
       // Set primitive value
       if (data[key] === undefined) {
         data[key] = value;
-      } else {
-        // TODO
       }
     });
   });

@@ -34,12 +34,13 @@ exports.parseFormData = (encodedQueryString) => {
         return;
       }
 
-      // Primitive array value
+      // Set primitive array value
       if (key === '') {
         data.push(value);
         return;
       }
 
+      // Get relevant array element
       if (Array.isArray(data)) {
         if (data.length === 0 || data.at(-1)[key] !== undefined) {
           data.push({ [key]: value });
@@ -47,14 +48,13 @@ exports.parseFormData = (encodedQueryString) => {
         data = data.at(-1);
       }
 
+      // Set primitive value
       if (data[key] === undefined) {
         data[key] = value;
       } else {
         // TODO
       }
     });
-
-    // numberOfTimesProcessed[path] += 1;
   });
 
   return formData;
@@ -99,94 +99,54 @@ assert.deepEqual(
   'Failed to parse array with objects'
 );
 
-// assert.deepEqual(
-//   {
-//     lanes: [
-//       { _id: 'A', name: 'Lane A' },
-//       { _id: 'B', name: 'Lane B' },
-//     ],
-//   },
-//   exports.parseFormData(
-//     [
-//       'lanes[][_id]=A',
-//       'lanes[][name]=Lane A',
-//       'lanes[][_id]=B',
-//       'lanes[][name]=Lane B',
-//     ].join('&')
-//   ),
-//   'Failed to parse shallow array'
-// );
-
-// assert.deepEqual(
-//   {
-//     lanes: [
-//       {
-//         tasks: [{ _id: 'A1', text: 'Task A1' }],
-//       },
-//       {
-//         tasks: [{ _id: 'B1', text: 'Task B1' }],
-//       },
-//     ],
-//   },
-//   exports.parseFormData(
-//     [
-//       'lanes[][tasks][][_id]=A1',
-//       'lanes[][tasks][][text]=Task A1',
-//       'lanes[][tasks][][_id]=B1',
-//       'lanes[][tasks][][text]=Task B1',
-//     ].join('&')
-//   ),
-//   'Failed to parse nested arrays'
-// );
-
-// assert.deepEqual(
-//   {
-//     lanes: [
-//       {
-//         _id: 'A',
-//         name: 'Lane A',
-//         tasks: [
-//           { _id: 'A1', text: 'Task A1' },
-//           { _id: 'A2', text: 'Task A2' },
-//           { _id: 'A3', text: 'Task A3' },
-//         ],
-//       },
-//       {
-//         _id: 'B',
-//         name: 'Lane B',
-//         tasks: [
-//           { _id: 'B1', text: 'Task B1' },
-//           { _id: 'B2', text: 'Task B2' },
-//         ],
-//       },
-//       {
-//         _id: 'C',
-//         name: 'Lane C',
-//         tasks: [{ _id: 'C1', text: 'Task C1' }],
-//       },
-//     ],
-//   },
-//   exports.parseFormData(
-//     [
-//       'lanes[][_id]=A',
-//       'lanes[][name]=Lane A',
-//       'lanes[][tasks][][_id]=A1',
-//       'lanes[][tasks][][text]=Task A1',
-//       'lanes[][tasks][][_id]=A2',
-//       'lanes[][tasks][][text]=Task A2',
-//       'lanes[][tasks][][_id]=A3',
-//       'lanes[][tasks][][text]=Task A3',
-//       'lanes[][_id]=B',
-//       'lanes[][name]=Lane B',
-//       'lanes[][tasks][][_id]=B1',
-//       'lanes[][tasks][][text]=Task B1',
-//       'lanes[][tasks][][_id]=B2',
-//       'lanes[][tasks][][text]=Task B2',
-//       'lanes[][_id]=C',
-//       'lanes[][name]=Lane C',
-//       'lanes[][tasks][][_id]=C1',
-//       'lanes[][tasks][][text]=Task C1',
-//     ].join('&')
-//   ),
-//   'Failed to parse form data'
-// );
+assert.deepEqual(
+  exports.parseFormData(
+    [
+      'lanes[][_id]=A',
+      'lanes[][name]=Lane A',
+      'lanes[][tasks][][_id]=A1',
+      'lanes[][tasks][][text]=Task A1',
+      'lanes[][tasks][][_id]=A2',
+      'lanes[][tasks][][text]=Task A2',
+      'lanes[][tasks][][_id]=A3',
+      'lanes[][tasks][][text]=Task A3',
+      'lanes[][_id]=B',
+      'lanes[][name]=Lane B',
+      'lanes[][tasks][][_id]=B1',
+      'lanes[][tasks][][text]=Task B1',
+      'lanes[][tasks][][_id]=B2',
+      'lanes[][tasks][][text]=Task B2',
+      'lanes[][_id]=C',
+      'lanes[][name]=Lane C',
+      'lanes[][tasks][][_id]=C1',
+      'lanes[][tasks][][text]=Task C1',
+    ].join('&')
+  ),
+  {
+    lanes: [
+      {
+        _id: 'A',
+        name: 'Lane A',
+        tasks: [
+          { _id: 'A1', text: 'Task A1' },
+          { _id: 'A2', text: 'Task A2' },
+          { _id: 'A3', text: 'Task A3' },
+        ],
+      },
+      {
+        _id: 'B',
+        name: 'Lane B',
+        tasks: [
+          { _id: 'B1', text: 'Task B1' },
+          { _id: 'B2', text: 'Task B2' },
+        ],
+      },
+      {
+        _id: 'C',
+        name: 'Lane C',
+        tasks: [{ _id: 'C1', text: 'Task C1' }],
+      },
+    ],
+  },
+  'Failed to parse form data'
+);

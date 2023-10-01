@@ -1,6 +1,11 @@
-<main class="flex h-full gap-4 p-4">
-  <% data.lanes.forEach((lane) => { %>
-    <%- include('lane.html', { lane, data }) %>
+<form
+  class="flex h-full gap-4 p-4"
+  hx-trigger="move-task"
+  hx-put="/<%= data._id %>"
+  hx-swap="outerHTML"
+>
+  <% data.lanes.forEach((lane, laneIndex) => { %>
+    <%- include('lane.html', { data, lane, laneIndex }) %>
   <% }); %>
 
   <div class="min-w-[var(--lane-width)]">
@@ -9,18 +14,18 @@
       class="self-start p-3 bg-white border rounded text-left hover:pr-[calc(var(--lane-width)-2.5rem)] transition-[padding]"
       hx-on::before-request="
         // TODO: Handle request failure
-        this.closest('main').insertBefore(this.nextElementSibling.content.cloneNode(true), this.parentElement);
+        this.closest('form').insertBefore(this.nextElementSibling.content.cloneNode(true), this.parentElement);
         this.scrollIntoView({ behavior: 'smooth' });
       "
       hx-post="/<%= data._id %>"
       hx-swap="outerHTML"
-      hx-target="closest main"
+      hx-target="closest form"
     >
       ➕
     </button>
 
     <template>
-      <%- include('lane.html', { lane: constants.NEW_LANE, data }) %>
+      <%- include('lane.html', { data, lane: constants.NEW_LANE, laneIndex: null }) %>
     </template>
   </div>
-</main>
+</form>

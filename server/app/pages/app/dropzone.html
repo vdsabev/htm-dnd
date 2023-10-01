@@ -27,37 +27,32 @@
   ondrop="
     this.removeAttribute('data-dragenter');
 
-    if (![window.taskBeingDragged.previousElementSibling, window.taskBeingDragged.nextElementSibling].includes(this)) {
-      const taskDropzone = window.taskBeingDragged.nextElementSibling;
+    const taskId = event.dataTransfer.getData('text/plain');
+    const taskElement = document.querySelector(`[name$='[_id]'][value='${taskId}']`).closest('[draggable]');
+
+    if (![taskElement.previousElementSibling, taskElement.nextElementSibling].includes(this)) {
+      const taskDropzone = taskElement.nextElementSibling;
       taskDropzone.parentElement.removeChild(taskDropzone);
-      window.taskBeingDragged.parentElement.removeChild(window.taskBeingDragged);
+      taskElement.parentElement.removeChild(taskElement);
 
       this.after(this.cloneNode(false));
-      this.after(window.taskBeingDragged);
+      this.after(taskElement);
 
-      const data = <%= JSON.stringify(data) %>;
-      const newLane = data.lanes.find((lane) => JSON.stringify(lane) === '<%= JSON.stringify(lane) %>');
-      const task = window.taskBeingDragged.textContent;
-      const oldLane = data.lanes.find((lane) => lane.tasks.includes(task));
-      const index = <%= index %>;
+      // Update hidden input names
+      // taskElement.querySelectorAll(`input[type='hidden']`).forEach((input) => {
+      //   input.name = input.name.replace(
+      //     /^lanes\[\d+\]\[tasks\]\[\d+\]/,
+      //     `lanes[<%= laneIndex %>][tasks][<%= taskIndex %>]`
+      //   );
+      // });
 
-      fetch(window.location.pathname, {
-        method: 'PUT',
-        body: JSON.stringify({
-          ...data,
-          lanes: data.lanes.map((lane) => {
-            if (lane === oldLane) {
-              lane = { ...lane, tasks: lane.tasks.filter(t => t !== task) };
-            }
-            if (lane === newLane) {
-              lane = { ...lane, tasks: [...lane.tasks.slice(0, index), task, ...lane.tasks.slice(index + 1)] };
-            }
-            return lane;
-          })
-        }),
-      });
+      htmx.trigger(this.closest('form'), 'move-task');
     }
-
-    window.taskBeingDragged = null;
   "
-><%- children %></div>
+>
+  <% if (!task) { %>
+    <div class="pt-2 font-bold">
+      <%= lane.name %> <span class="inline-block px-2 rounded-full bg-slate-200"><%= lane.tasks.length %></span>
+    </div>
+  <% } %>
+</div>

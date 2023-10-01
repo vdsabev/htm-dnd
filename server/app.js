@@ -1,8 +1,8 @@
-const ejs = require('ejs');
-
-const Page = require('./app/layouts/Page');
 const constants = require('./app/constants');
 const db = require('./app/db');
+const Page = require('./app/layouts/Page');
+const App = require('./app/pages/app');
+const utils = require('./app/utils');
 
 exports.handler = async (request, context) => {
   context.callbackWaitsForEmptyEventLoop = false; // https://mongoosejs.com/docs/lambda.html
@@ -13,41 +13,31 @@ exports.handler = async (request, context) => {
   if (request.path) {
     const [dataId, laneId] = request.path.split('/');
 
+    // Get task page
     if (request.httpMethod === 'GET') {
+      const data = await db.getDataForId(dataId);
       return response.html(
-        await Page({
-          body: await ejs.renderFile(`${__dirname}/app/pages/app/get.html`, {
-            data: await db.getDataForId(dataId),
-            constants,
-          }),
-        })
+        await Page({ body: await App({ data, constants }) })
       );
     }
 
-    if (request.httpMethod === 'POST') {
-      const updatedData = await db.addNewLane(dataId);
-      return response.html(
-        await ejs.renderFile(`${__dirname}/app/pages/app/get.html`, {
-          data: updatedData,
-          constants,
-        })
-      );
-    }
-
+    // Update data
     if (request.httpMethod === 'PUT') {
-      const body = JSON.parse(request.body);
-      await db.setDataForId(dataId, body);
-      return response.noContent(); // TODO: Render page
+      const formData = utils.parseFormData(request.body);
+      const updatedData = await db.setDataForId(dataId, formData);
+      return response.html(await App({ data: updatedData, constants }));
     }
 
+    // Add lane
+    if (request.httpMethod === 'POST') {
+      const updatedData = await db.addLane(dataId);
+      return response.html(await App({ data: updatedData, constants }));
+    }
+
+    // Delete lane
     if (request.httpMethod === 'DELETE') {
       const updatedData = await db.deleteLane(dataId, laneId);
-      return response.html(
-        await ejs.renderFile(`${__dirname}/app/pages/app/get.html`, {
-          data: updatedData,
-          constants,
-        })
-      );
+      return response.html(await App({ data: updatedData, constants }));
     }
   }
 

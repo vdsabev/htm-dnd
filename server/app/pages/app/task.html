@@ -1,10 +1,13 @@
 <div
-  class="px-3 py-2 whitespace-pre transition bg-white border rounded-sm shadow-sm select-none cursor-grab active:bg-slate-50 active:cursor-grabbing active:text-transparent"
+  class="px-3 py-2 transition bg-white border rounded-sm shadow-sm select-none cursor-grab active:bg-slate-50 active:cursor-grabbing active:text-transparent"
   draggable="true"
   ondragstart="
-    window.taskBeingDragged = this;
     event.stopPropagation(); // Prevent parent node from receiving child events
-    event.dataTransfer.setData('Text', '');
+    event.dataTransfer.setData('text/plain', '<%= task._id %>');
     event.dataTransfer.effectAllowed = 'move';
   "
-><%= task %></div>
+>
+  <input type="hidden" name="lanes[][tasks][][_id]" value="<%= task._id %>" />
+  <input type="hidden" name="lanes[][tasks][][text]" value="<%= task.text %>" />
+  <div class="whitespace-pre-line"><%= task.text %></div>
+</div>

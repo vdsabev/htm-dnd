@@ -17,7 +17,7 @@ const connect = async function () {
   mongoose.model(
     'data',
     new mongoose.Schema({
-      lanes: [{ name: String, tasks: [String] }],
+      lanes: [{ name: String, tasks: [{ text: String }] }],
     })
   );
 
@@ -36,7 +36,7 @@ module.exports = {
       .findOneAndUpdate({ _id: dataId }, newData, { new: true })
       .lean();
   },
-  async addNewLane(/** @type {string} */ dataId) {
+  async addLane(/** @type {string} */ dataId) {
     const db = await connect();
     return db
       .model('data')

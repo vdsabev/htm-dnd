@@ -1,6 +1,9 @@
 <div
   class="relative flex flex-col min-w-[var(--lane-width)] border rounded w-[var(--lane-width)] bg-slate-100 px-3 shadow-inner overflow-y-auto"
 >
+  <input type="hidden" name="lanes[][_id]" value="<%= lane._id %>" />
+  <input type="hidden" name="lanes[][name]" value="<%= lane.name %>" />
+
   <button
     type="button"
     class="absolute px-3 py-1 border-transparent rounded-full top-2 right-1 hover:bg-white hover:border-slate-500"
@@ -16,18 +19,9 @@
     ×
   </button>
 
-  <%- include('dropzone.html', {
-    data,
-    lane,
-    index: 0,
-    children: `
-      <div class="pt-2 font-bold">
-        ${lane.name} <span class="inline-block px-2 rounded-full bg-slate-200">${lane.tasks.length}</span>
-      </div>
-    `,
-  }) %>
-  <% lane.tasks.forEach((task, index) => { %>
-    <%- include('task.html', { task }) %>
-    <%- include('dropzone.html', { data, lane, index: index + 1, children: '' }) %>
+  <%- include('dropzone.html', { lane, laneIndex, task: null, taskIndex: 0 }) %>
+  <% lane.tasks.forEach((task, taskIndex) => { %>
+    <%- include('task.html', { lane, laneIndex, task, taskIndex }) %>
+    <%- include('dropzone.html', { lane, laneIndex, task, taskIndex: taskIndex + 1 }) %>
   <% }); %>
 </div>

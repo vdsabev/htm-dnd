@@ -2,7 +2,7 @@ const assert = require('assert');
 
 exports.parseFormData = (encodedQueryString) => {
   const formData = {};
-  const numberOfTimesProcessed = {};
+  // const numberOfTimesProcessed = {};
 
   const pathValuePairs = encodedQueryString.split('&');
   pathValuePairs.forEach((pathValuePair, index) => {
@@ -10,29 +10,31 @@ exports.parseFormData = (encodedQueryString) => {
     const path = decodeURIComponent(encodedPath);
     const arrayKeys = path.split('[]');
 
-    numberOfTimesProcessed[path] ??= 0;
+    // numberOfTimesProcessed[path] ??= 0;
 
-    let currentValue = formData;
+    let data = formData;
     arrayKeys.forEach((arrayKey, index) => {
-      if (index < arrayKeys.length - 1) {
-        currentValue[arrayKey] ??= [];
-        currentValue = currentValue[arrayKey];
-      } else if (arrayKey === '') {
-        currentValue.push(value);
-      } else {
-        const objectKeys = arrayKey
-          .split('[')
-          .map((key) => key.replace(']', ''));
+      const objectKeys = arrayKey.split('[').map((key) => key.replace(']', ''));
+      objectKeys.slice(0, -1).forEach((objectKey) => {
+        data[objectKey] ??= {};
+        data = data[objectKey];
+      });
 
-        objectKeys.slice(0, -1).forEach((objectKey) => {
-          currentValue[objectKey] ??= {};
-          currentValue = currentValue[objectKey];
-        });
-        currentValue[objectKeys.at(-1)] = value;
+      if (index < arrayKeys.length - 1) {
+        data[objectKeys.at(-1)] ??= [];
+        data = data[objectKeys.at(-1)];
+        return;
       }
+
+      if (objectKeys.at(-1) === '') {
+        data.push(value);
+        return;
+      }
+
+      data[objectKeys.at(-1)] = value;
     });
 
-    numberOfTimesProcessed[path] += 1;
+    // numberOfTimesProcessed[path] += 1;
   });
 
   return formData;
@@ -40,15 +42,15 @@ exports.parseFormData = (encodedQueryString) => {
 
 // Tests
 assert.deepEqual(
-  exports.parseFormData(['a=1', 'b=2'].join('&')),
-  { a: '1', b: '2' },
-  'Failed to parse shallow object'
+  exports.parseFormData(['first=Albert', 'last=Einstein'].join('&')),
+  { first: 'Albert', last: 'Einstein' },
+  'Failed to parse object'
 );
 
 assert.deepEqual(
-  exports.parseFormData(['a[]=1', 'a[]=2'].join('&')),
-  { a: ['1', '2'] },
-  'Failed to parse shallow array'
+  exports.parseFormData(['names[]=Alice', 'names[]=Bob'].join('&')),
+  { names: ['Alice', 'Bob'] },
+  'Failed to parse array'
 );
 
 assert.deepEqual(
@@ -57,6 +59,24 @@ assert.deepEqual(
   ),
   { names: { first: 'Albert', last: 'Einstein' } },
   'Failed to parse nested object'
+);
+
+assert.deepEqual(
+  exports.parseFormData(
+    [
+      'names[][first]=Albert',
+      'names[][last]=Einstein',
+      'names[][first]=Carl',
+      'names[][last]=Sagan',
+    ].join('&')
+  ),
+  {
+    names: [
+      { first: 'Albert', last: 'Einstein' },
+      { first: 'Carl', last: 'Sagan' },
+    ],
+  },
+  'Failed to parse array with objects'
 );
 
 // assert.deepEqual(

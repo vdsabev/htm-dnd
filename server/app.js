@@ -1,14 +1,20 @@
 const ejs = require('ejs');
+
 const Page = require('./app/layouts/Page');
+const db = require('./app/db');
 
 exports.handler = async (request, context) => {
+  context.callbackWaitsForEmptyEventLoop = false; // https://mongoosejs.com/docs/lambda.html
+
   request.path = request.path.replace(/^\//, ''); // Normalize path by removing starting slash
 
-  // Pages
-  if (request.httpMethod === 'GET' && request.path === '') {
+  // Task board
+  if (request.httpMethod === 'GET' && request.path && request.path.split('/')[0] !== 'pages') {
     return response.html(
       await Page({
-        body: await ejs.renderFile(`${__dirname}/app/pages/app/get.html`),
+        body: await ejs.renderFile(`${__dirname}/app/pages/app/get.html`, {
+          data: await db.getDataForId(request.path),
+        }),
       })
     );
   }

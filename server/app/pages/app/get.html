@@ -1,11 +1,5 @@
 <main class="flex h-full gap-4 p-4 app-lanes">
-  <% const lanes = [
-    { name: '⛏️ To Do', tasks: ['Ignore the haters'] },
-    { name: '⏳ In Progress', tasks: ['Code with htmx/hypermedia\n(same thing)'] },
-    { name: '✅ Done', tasks: ['Drink coffee', 'Stretch', 'Wake up'] },
-  ]; %>
-
-  <% for (const lane of lanes) { %>
+  <% for (const lane of data.lanes) { %>
     <%- include('lane.html', lane) %>
   <% } %>
 

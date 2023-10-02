@@ -1,12 +1,8 @@
-const ejs = require('ejs');
-
 const constants = require('./constants');
 const db = require('./db');
 const Page = require('./layouts/Page');
+const { App, Task } = require('./pages');
 const utils = require('./utils');
-
-const App = (data) => ejs.renderFile(`${__dirname}/pages/app.html`, data);
-const Task = (data) => ejs.renderFile(`${__dirname}/pages/task.html`, data);
 
 module.exports = {
   // Boards

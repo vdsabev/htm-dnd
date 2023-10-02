@@ -27,6 +27,11 @@ const response = {
       body: Array.isArray(body) ? body.join('') : body,
     };
   },
+  noContent() {
+    return {
+      statusCode: 204,
+    };
+  },
   notFound() {
     return {
       ...response.html('Not Found'),

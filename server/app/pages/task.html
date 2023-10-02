@@ -12,9 +12,22 @@
   <div
     class="whitespace-pre-line"
     contenteditable="true"
-    hx-trigger="input delay:300ms"
-    hx-put="/boards/<%= board._id %>/lanes/<%= lane._id %>/tasks/<%= task._id %>"
-    hx-swap="outerHTML"
-    hx-target="closest [draggable]"
+    oninput="
+      window.taskEditTimer ||= {};
+      clearTimeout(window.taskEditTimer['<%= task._id %>']);
+      window.taskEditTimer['<%= task._id %>'] = setTimeout(() => {
+        const text = this.textContent;
+        fetch(
+          '/boards/<%= board._id %>/lanes/<%= lane._id %>/tasks/<%= task._id %>',
+          { method: text ? 'PUT' : 'DELETE', body: text, }
+        )
+          .then((response) => response.ok ? response.text() : null)
+          .then((html) => {
+            if (html != null) {
+              this.closest('[draggable]').outerHTML = html;
+            }
+          });
+      }, 300);
+    "
   ><%= task.text %></div>
 </div>

@@ -4,6 +4,10 @@ const constants = require('./constants');
 /** @type {mongoose} */
 let connection = null;
 
+const Task = new mongoose.Schema({ text: String });
+const Lane = new mongoose.Schema({ name: String, tasks: [Task] });
+const Board = new mongoose.Schema({ lanes: [Lane] });
+
 const connect = async function () {
   if (connection) return connection;
 
@@ -14,12 +18,7 @@ const connect = async function () {
 
   await connection;
 
-  mongoose.model(
-    'board',
-    new mongoose.Schema({
-      lanes: [{ name: String, tasks: [{ text: String }] }],
-    })
-  );
+  mongoose.model('board', Board);
 
   return connection;
 };
@@ -41,7 +40,7 @@ module.exports = {
   },
 
   // Lane
-  async addLane(/** @type {string} */ boardId) {
+  async createLane(/** @type {string} */ boardId) {
     const db = await connect();
     return db
       .model('board')
@@ -69,6 +68,22 @@ module.exports = {
   },
 
   // Task
+  async createTask(
+    /** @type {string} */ boardId,
+    /** @type {string} */ laneId,
+    /** @type {string} */ text
+  ) {
+    const db = await connect();
+    const task = { _id: mongoose.Types.ObjectId(), text };
+
+    await db
+      .model('board')
+      .updateOne({ _id: boardId, 'lanes._id': laneId }, { $push: task })
+      .lean();
+
+    return task;
+  },
+
   async updateTask(
     /** @type {string} */ boardId,
     /** @type {string} */ laneId,
@@ -76,12 +91,29 @@ module.exports = {
     /** @type {string} */ text
   ) {
     const db = await connect();
-    return db
+    await db
       .model('board')
-      .findOneAndUpdate(
-        { _id: boardId, 'lanes._id': laneId, 'lanes.tasks._id': taskId },
-        { $set: { 'lanes.$.tasks.$.text': text } },
-        { new: true }
+      .updateOne(
+        { _id: boardId },
+        { $set: { 'lanes.$[lane].tasks.$[task].text': text } },
+        { arrayFilters: [{ 'lane._id': laneId }, { 'task._id': taskId }] }
+      )
+      .lean();
+
+    return { _id: taskId, text };
+  },
+
+  async deleteTask(
+    /** @type {string} */ boardId,
+    /** @type {string} */ laneId,
+    /** @type {string} */ taskId
+  ) {
+    const db = await connect();
+    await db
+      .model('board')
+      .updateOne(
+        { _id: boardId, 'lanes._id': laneId },
+        { $pull: { 'lanes.$.tasks': { _id: taskId } } }
       )
       .lean();
   },

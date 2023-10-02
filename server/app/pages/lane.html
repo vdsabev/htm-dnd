@@ -1,4 +1,5 @@
 <div
+  <%= Object.keys(attrs).map((key) => `${key}="${attrs[key]}"`).join(' ') %>
   class="relative flex flex-col min-w-[var(--lane-width)] border rounded w-[var(--lane-width)] bg-slate-100 px-3 shadow-inner overflow-y-auto"
 >
   <input type="hidden" name="lanes[][_id]" value="<%= lane._id %>" />
@@ -9,19 +10,27 @@
     class="absolute px-3 py-1 border-transparent rounded-full top-2 right-1 hover:bg-white hover:border-slate-500"
     title="Close"
     hx-on::before-request="
-      // TODO: Handle request failure
-      this.parentElement.parentElement.removeChild(this.parentElement)
+      window.laneBeingDeleted = this.parentElement;
+      window.lanesContainer = window.laneBeingDeleted.parentElement;
+      window.lanesContainer.removeChild(window.laneBeingDeleted)
+      window.previousLane = window.laneBeingDeleted.previousElementSibling;
+    "
+    hx-on::response-error="
+      if (window.previousLane) {
+        window.previousLane.after(window.laneBeingDeleted);
+      } else {
+        window.lanesContainer.prepend(window.laneBeingDeleted);
+      }
     "
     hx-delete="/boards/<%= board._id %>/lanes/<%= lane._id %>"
-    hx-swap="outerHTML"
-    hx-target="closest form"
+    hx-swap="none"
   >
     ×
   </button>
 
   <%- include('dropzone.html', { board, lane, task: null }) %>
   <% lane.tasks.forEach((task) => { %>
-    <%- include('task.html', { board, lane, task }) %>
+    <%- include('task.html', { lane, task }) %>
     <%- include('dropzone.html', { board, lane, task }) %>
   <% }); %>
 </div>

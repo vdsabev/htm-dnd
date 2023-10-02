@@ -22,22 +22,22 @@ module.exports = {
   },
 
   // Lanes
-  // TODO: Only update lane, not the whole page
   '/boards/:boardId/lanes': {
     async post(request, response) {
-      const board = await db.createLane(request.params.boardId);
-      return response.html(await pages.App({ board, constants }));
+      await db.createLane(request.params.boardId);
+      return response.html(
+        await pages.Lane({
+          board: { _id: request.params.boardId },
+          lane: constants.NEW_LANE,
+        })
+      );
     },
   },
 
-  // TODO: Only remove lane, don't update the whole page
   '/boards/:boardId/lanes/:laneId': {
     async delete(request, response) {
-      const board = await db.deleteLane(
-        request.params.boardId,
-        request.params.laneId
-      );
-      return response.html(await pages.App({ board, constants }));
+      await db.deleteLane(request.params.boardId, request.params.laneId);
+      return response.noContent();
     },
   },
 
@@ -50,11 +50,7 @@ module.exports = {
         request.body
       );
       return response.html(
-        await pages.Task({
-          board: { _id: request.params.boardId },
-          lane: { _id: request.params.laneId },
-          task,
-        })
+        await pages.Task({ lane: { _id: request.params.laneId }, task })
       );
     },
   },
@@ -68,11 +64,7 @@ module.exports = {
         request.body
       );
       return response.html(
-        await pages.Task({
-          board: { _id: request.params.boardId },
-          lane: { _id: request.params.laneId },
-          task,
-        })
+        await pages.Task({ lane: { _id: request.params.laneId }, task })
       );
     },
 

@@ -1,27 +1,34 @@
 <form class="flex h-full gap-4 p-4" name="board">
   <% board.lanes.forEach((lane) => { %>
-    <%- include('lane.html', { board, lane }) %>
+    <%- include('lane.html', { attrs: {}, board, lane }) %>
   <% }); %>
 
-  <div class="min-w-[var(--lane-width)]">
+  <%- include('lane.html', { attrs: { id: 'new-lane', style: 'display: none' }, board, lane: constants.NEW_LANE }) %>
+
+  <div id="create-lane-button" class="min-w-[var(--lane-width)]">
     <button
       type="button"
       class="self-start p-3 bg-white border rounded text-left hover:pr-[calc(var(--lane-width)-2.5rem)] transition-[padding]"
       hx-on::before-request="
-        // TODO: Handle request failure
-        this.closest('form').insertBefore(this.nextElementSibling.content.cloneNode(true), this.parentElement);
+        const newLane = document.querySelector('#new-lane');
+        newLane.style.display = 'initial';
         this.scrollIntoView({ behavior: 'smooth' });
+      "
+      hx-on::after-request="
+        const newLane = event.detail.target;
+        if (event.detail.successful) {
+          const newNewLane = newLane.cloneNode(true);
+          // TODO: Finish
+        } else {
+          newLane.style.display = 'none';
+        }
       "
       hx-post="/boards/<%= board._id %>/lanes"
       hx-swap="outerHTML"
-      hx-target="closest form"
+      hx-target="#new-lane"
     >
       ➕
     </button>
-
-    <template>
-      <%- include('lane.html', { board, lane: constants.NEW_LANE }) %>
-    </template>
   </div>
 
   <script>

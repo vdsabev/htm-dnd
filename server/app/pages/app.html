@@ -23,4 +23,48 @@
       <%- include('lane.html', { board, lane: constants.NEW_LANE }) %>
     </template>
   </div>
+
+  <script>
+    const taskUpdateTimers = {};
+
+    function updateOrDeleteTask(container, laneId, taskId) {
+      clearTimeout(taskUpdateTimers[taskId]);
+      taskUpdateTimers[taskId] = setTimeout(() => {
+        const text = container.textContent;
+
+        if (text) {
+        fetch(
+          `/boards/<%= board._id %>/lanes/${laneId}/tasks/${taskId}`,
+          { method: 'PUT', body: text, }
+        )
+          .then((response) => response.ok ? response.text() : null)
+          .then((html) => {
+            if (html) {
+              container.outerHTML = html;
+            }
+          });
+        } else {
+          // Optimistically remove task
+          const parent = container.parentElement;
+          const previousSibling = container.previousElementSibling;
+          parent.removeChild(container);
+
+          fetch(
+            `/boards/<%= board._id %>/lanes/${laneId}/tasks/${taskId}`,
+            { method: 'DELETE' }
+          )
+            .then((response) => {
+              // Restore task
+              if (!response.ok) {
+                if (previousSibling) {
+                  previousSibling.after(container);
+                } else {
+                  parent.prepend(container);
+                }
+              }
+            })
+        }
+      }, 300);
+    }
+  </script>
 </form>

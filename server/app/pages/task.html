@@ -12,22 +12,6 @@
   <div
     class="whitespace-pre-line"
     contenteditable="true"
-    oninput="
-      window.taskEditTimer ||= {};
-      clearTimeout(window.taskEditTimer['<%= task._id %>']);
-      window.taskEditTimer['<%= task._id %>'] = setTimeout(() => {
-        const text = this.textContent;
-        fetch(
-          '/boards/<%= board._id %>/lanes/<%= lane._id %>/tasks/<%= task._id %>',
-          { method: text ? 'PUT' : 'DELETE', body: text, }
-        )
-          .then((response) => response.ok ? response.text() : null)
-          .then((html) => {
-            if (html != null) {
-              this.closest('[draggable]').outerHTML = html;
-            }
-          });
-      }, 300);
-    "
+    oninput="updateOrDeleteTask(this.closest('[draggable]'), '<%= lane._id %>', '<%= task._id %>')"
   ><%= task.text %></div>
 </div>

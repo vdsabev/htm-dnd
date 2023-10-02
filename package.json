@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "ejs": "3.1.9",
-    "mongoose": "7.5.3"
+    "mongoose": "7.5.3",
+    "pathern": "0.3.1"
   }
 }

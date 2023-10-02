@@ -1,6 +1,6 @@
-<form class="flex h-full gap-4 p-4" name="data">
-  <% data.lanes.forEach((lane, laneIndex) => { %>
-    <%- include('lane.html', { data, lane, laneIndex }) %>
+<form class="flex h-full gap-4 p-4" name="board">
+  <% board.lanes.forEach((lane) => { %>
+    <%- include('lane.html', { board, lane }) %>
   <% }); %>
 
   <div class="min-w-[var(--lane-width)]">
@@ -12,7 +12,7 @@
         this.closest('form').insertBefore(this.nextElementSibling.content.cloneNode(true), this.parentElement);
         this.scrollIntoView({ behavior: 'smooth' });
       "
-      hx-post="/<%= data._id %>"
+      hx-post="/boards/<%= board._id %>/lanes"
       hx-swap="outerHTML"
       hx-target="closest form"
     >
@@ -20,7 +20,7 @@
     </button>
 
     <template>
-      <%- include('lane.html', { data, lane: constants.NEW_LANE, laneIndex: null }) %>
+      <%- include('lane.html', { board, lane: constants.NEW_LANE }) %>
     </template>
   </div>
 </form>

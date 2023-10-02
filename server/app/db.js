@@ -15,7 +15,7 @@ const connect = async function () {
   await connection;
 
   mongoose.model(
-    'data',
+    'board',
     new mongoose.Schema({
       lanes: [{ name: String, tasks: [{ text: String }] }],
     })
@@ -25,35 +25,62 @@ const connect = async function () {
 };
 
 module.exports = {
-  async getDataForId(/** @type {string} */ dataId) {
+  // Board
+  async getBoard(/** @type {string} */ boardId) {
     const db = await connect();
-    return db.model('data').findById(dataId).lean();
+    // TODO: Create a new board if the ID doesn't exist
+    return db.model('board').findById(boardId).lean();
   },
-  async setDataForId(/** @type {string} */ dataId, newData) {
+
+  async updateBoard(/** @type {string} */ boardId, data) {
     const db = await connect();
     return db
-      .model('data')
-      .findOneAndUpdate({ _id: dataId }, newData, { new: true })
+      .model('board')
+      .findOneAndUpdate({ _id: boardId }, data, { new: true })
       .lean();
   },
-  async addLane(/** @type {string} */ dataId) {
+
+  // Lane
+  async addLane(/** @type {string} */ boardId) {
     const db = await connect();
     return db
-      .model('data')
+      .model('board')
       .findOneAndUpdate(
-        { _id: dataId },
+        { _id: boardId },
         { $push: { lanes: constants.NEW_LANE } },
         { new: true }
       )
       .lean();
   },
-  async deleteLane(/** @type {string} */ dataId, /** @type {string} */ laneId) {
+
+  async deleteLane(
+    /** @type {string} */ boardId,
+    /** @type {string} */ laneId
+  ) {
     const db = await connect();
     return db
-      .model('data')
+      .model('board')
       .findOneAndUpdate(
-        { _id: dataId },
+        { _id: boardId },
         { $pull: { lanes: { _id: laneId } } },
+        { new: true }
+      )
+      .lean();
+  },
+
+  // Task
+  async updateTask(
+    /** @type {string} */ boardId,
+    /** @type {string} */ laneId,
+    /** @type {string} */ taskId,
+    /** @type {string} */ text
+  ) {
+    const db = await connect();
+    return db
+      .model('board')
+      .findOneAndUpdate(
+        { _id: boardId, 'lanes._id': laneId, 'lanes.tasks._id': taskId },
+        { $set: { 'lanes.$.tasks.$.text': text } },
         { new: true }
       )
       .lean();

@@ -39,7 +39,7 @@
       this.after(taskElement);
 
       // `toString` replaces spaces with `+`, serialize manually
-      fetch('/<%= data._id %>', {
+      fetch('/boards/<%= board._id %>', {
         method: 'PUT',
         body: [...new URLSearchParams(new FormData(this.closest('form')))]
           .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)

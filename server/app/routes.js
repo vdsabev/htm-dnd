@@ -1,7 +1,7 @@
 const constants = require('./constants');
 const db = require('./db');
 const Page = require('./layouts/Page');
-const { App, Task } = require('./pages');
+const pages = require('./pages');
 const utils = require('./utils');
 
 module.exports = {
@@ -10,14 +10,14 @@ module.exports = {
     async get(request, response) {
       const board = await db.getBoard(request.params.boardId);
       return response.html(
-        await Page({ body: await App({ board, constants }) })
+        await Page({ body: await pages.App({ board, constants }) })
       );
     },
 
     async put(request, response) {
       const data = utils.parseFormData(request.body);
       const board = await db.updateBoard(request.params.boardId, data);
-      return response.html(await App({ board, constants }));
+      return response.html(await pages.App({ board, constants }));
     },
   },
 
@@ -26,7 +26,7 @@ module.exports = {
   '/boards/:boardId/lanes': {
     async post(request, response) {
       const board = await db.createLane(request.params.boardId);
-      return response.html(await App({ board, constants }));
+      return response.html(await pages.App({ board, constants }));
     },
   },
 
@@ -37,7 +37,7 @@ module.exports = {
         request.params.boardId,
         request.params.laneId
       );
-      return response.html(await App({ board, constants }));
+      return response.html(await pages.App({ board, constants }));
     },
   },
 
@@ -50,7 +50,7 @@ module.exports = {
         request.body
       );
       return response.html(
-        await Task({
+        await pages.Task({
           board: { _id: request.params.boardId },
           lane: { _id: request.params.laneId },
           task,
@@ -68,7 +68,7 @@ module.exports = {
         request.body
       );
       return response.html(
-        await Task({
+        await pages.Task({
           board: { _id: request.params.boardId },
           lane: { _id: request.params.laneId },
           task,

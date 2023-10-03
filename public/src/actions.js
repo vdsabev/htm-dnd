@@ -40,21 +40,31 @@ export default {
     };
   },
 
-  // TODO: Fix disappearing task when moving it after itself
   moveTask(taskId, toLane, toIndex) {
     const fromLane = this.lanes.find((lane) => lane.tasks.find(byId(taskId)));
-    const task = fromLane.tasks.find(byId(taskId));
+    const fromIndex = fromLane.tasks.findIndex(byId(taskId));
+
+    const task = fromLane.tasks[fromIndex];
 
     return {
       lanes: this.lanes
         .map((lane) =>
-          lane === fromLane
+          lane._id === fromLane._id
             ? { ...lane, tasks: remove(lane.tasks, task) }
             : lane
         )
         .map((lane) =>
-          lane === toLane
-            ? { ...lane, tasks: insert(lane.tasks, task, toIndex) }
+          lane._id === toLane._id
+            ? {
+                ...lane,
+                tasks: insert(
+                  lane.tasks,
+                  task,
+                  fromLane._id === toLane._id && fromIndex < toIndex
+                    ? toIndex - 1
+                    : toIndex
+                ),
+              }
             : lane
         ),
     };

@@ -25,12 +25,13 @@ export default ({
 
     <${Dropzone} moveTask=${(taskId) => moveTask(taskId, lane, 0)}>
       <div class="pt-2 font-bold">
-        <input
-          class="bg-transparent"
-          type="text"
-          value=${lane.name}
-          oninput=${(event) => updateLane(lane, event.currentTarget.value)}
-        />
+        <span
+          class="outline-offset-4"
+          contenteditable
+          onblur=${(event) => updateLane(lane, event.currentTarget.textContent)}
+        >
+          ${lane.name}
+        </span>
 
         <span class="inline-block ml-1 px-2 rounded-full bg-slate-200">
           ${lane.tasks.length}
@@ -38,6 +39,7 @@ export default ({
       </div>
 
       <${Task}
+        class="mt-3 mb-1"
         task=${{ text: '' }}
         contenteditable
         onblur=${(event) => {

@@ -5,7 +5,7 @@ import Board from './components/Board.js';
 import http from './http.js';
 
 const store = createStore({
-  ...window.app.data,
+  ...window.app.board,
 
   set(model) {
     return model;
@@ -13,83 +13,48 @@ const store = createStore({
 
   // Lanes
   addLane() {
-    const newLane = { ...this.newLane };
-    const changes = {
-      lanes: [...this.lanes, newLane],
-    };
-
-    http
-      .post(`/boards/${this._id}/lanes`)
-      .then((lane) => {
-        this.replaceLane(newLane, lane);
-      })
-      .catch((error) => {
-        // TODO: Error handling
-        this.removeLaneClient(newLane);
-      });
-
-    return changes;
-  },
-
-  replaceLane(oldLane, newLane) {
     return {
-      lanes: this.lanes.map((l) => (l === oldLane ? newLane : l)),
+      lanes: [...this.lanes, { name: 'New Lane', tasks: [] }],
     };
   },
 
   removeLane(lane) {
-    if (lane._id) {
-      const index = this.lanes.indexOf(lane);
-      http.delete(`/boards/${this._id}/lanes/${lane._id}`).catch((error) => {
-        // TODO: Error handling
-        this.set({
-          lanes: [
-            ...this.lanes.slice(0, index),
-            lane,
-            ...this.lanes.slice(index),
-          ],
-        });
-      });
-    }
-
-    return this.removeLaneClient(lane);
-  },
-
-  removeLaneClient(lane) {
     return {
       lanes: this.lanes.filter((l) => l !== lane),
     };
   },
 
   // Tasks
-  moveTask(taskId, laneId, index) {
-    const oldLane = this.lanes.find((lane) =>
+  moveTask(taskId, toLane, toIndex) {
+    const fromLane = this.lanes.find((lane) =>
       lane.tasks.find((task) => task._id === taskId)
     );
-    const taskIndex = oldLane.tasks.findIndex((task) => task._id === taskId);
-    const task = oldLane.tasks[taskIndex];
+    const fromIndex = fromLane.tasks.findIndex(
+      (task) => task._id === taskId
+    );
+    const task = fromLane.tasks[fromIndex];
 
     return {
       lanes: this.lanes
         .map((lane) =>
-          lane._id === oldLane._id
+          lane._id === fromLane._id
             ? {
                 ...lane,
                 tasks: [
-                  ...lane.tasks.slice(0, taskIndex),
-                  ...lane.tasks.slice(taskIndex + 1),
+                  ...lane.tasks.slice(0, fromIndex),
+                  ...lane.tasks.slice(fromIndex + 1),
                 ],
               }
             : lane
         )
         .map((lane) =>
-          lane._id === laneId
+          lane === toLane
             ? {
                 ...lane,
                 tasks: [
-                  ...lane.tasks.slice(0, index),
+                  ...lane.tasks.slice(0, toIndex),
                   task,
-                  ...lane.tasks.slice(index),
+                  ...lane.tasks.slice(toIndex),
                 ],
               }
             : lane
@@ -98,8 +63,28 @@ const store = createStore({
   },
 });
 
-const mount = (model) =>
-  render(html`<${Board} board=${model} />`, document.querySelector('main'));
+const mount = (board) =>
+  render(html`<${Board} board=${board} />`, document.querySelector('main'));
 mount(store.model);
 
 store.subscribe(mount);
+
+/** @type {number | undefined} */ let httpTimer;
+let lastStoredData = JSON.stringify(store.model);
+store.subscribe((board) => {
+  window.clearTimeout(httpTimer);
+  httpTimer = setTimeout(() => {
+    const body = JSON.stringify(board);
+    if (lastStoredData === body) return;
+
+    http
+      .patch(`/boards/${board._id}`, { body })
+      .then((data) => {
+        lastStoredData = JSON.stringify(data);
+        store.set(data);
+      })
+      .catch((error) => {
+        window.alert(error.toString());
+      });
+  }, 300);
+});

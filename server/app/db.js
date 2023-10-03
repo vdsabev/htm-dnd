@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const constants = require('./constants');
 
 /** @type {mongoose} */
 let connection = null;
@@ -35,79 +34,6 @@ module.exports = {
     return db
       .model('board')
       .findOneAndUpdate({ _id: boardId }, data, { new: true })
-      .lean();
-  },
-
-  // Lane
-  async createLane(/** @type {string} */ boardId) {
-    const db = await connect();
-    const lane = { _id: new mongoose.Types.ObjectId(), ...constants.NEW_LANE };
-    await db
-      .model('board')
-      .updateOne({ _id: boardId }, { $push: { lanes: lane } })
-      .lean();
-
-    return lane;
-  },
-
-  async deleteLane(
-    /** @type {string} */ boardId,
-    /** @type {string} */ laneId
-  ) {
-    const db = await connect();
-    await db
-      .model('board')
-      .updateOne({ _id: boardId }, { $pull: { lanes: { _id: laneId } } })
-      .lean();
-  },
-
-  // Task
-  async createTask(
-    /** @type {string} */ boardId,
-    /** @type {string} */ laneId,
-    /** @type {string} */ text
-  ) {
-    const db = await connect();
-    const task = { _id: new mongoose.Types.ObjectId(), text };
-    await db
-      .model('board')
-      .updateOne({ _id: boardId, 'lanes._id': laneId }, { $push: task })
-      .lean();
-
-    return task;
-  },
-
-  async updateTask(
-    /** @type {string} */ boardId,
-    /** @type {string} */ laneId,
-    /** @type {string} */ taskId,
-    /** @type {string} */ text
-  ) {
-    const db = await connect();
-    await db
-      .model('board')
-      .updateOne(
-        { _id: boardId },
-        { $set: { 'lanes.$[lane].tasks.$[task].text': text } },
-        { arrayFilters: [{ 'lane._id': laneId }, { 'task._id': taskId }] }
-      )
-      .lean();
-
-    return { _id: taskId, text };
-  },
-
-  async deleteTask(
-    /** @type {string} */ boardId,
-    /** @type {string} */ laneId,
-    /** @type {string} */ taskId
-  ) {
-    const db = await connect();
-    await db
-      .model('board')
-      .updateOne(
-        { _id: boardId, 'lanes._id': laneId },
-        { $pull: { 'lanes.$.tasks': { _id: taskId } } }
-      )
       .lean();
   },
 };

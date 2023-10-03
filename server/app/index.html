@@ -42,11 +42,7 @@
     </script>
     <script>
       window.app = {
-        data: {
-          _id: '<%= board._id %>',
-          lanes: <%- JSON.stringify(board.lanes) %>,
-          newLane: <%- JSON.stringify(constants.NEW_LANE) %>,
-        },
+        board: <%- JSON.stringify(board) %>,
       };
     </script>
     <script type="module" src="/src/app.js"></script>

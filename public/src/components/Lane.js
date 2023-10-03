@@ -16,7 +16,7 @@ export default ({ lane, removeLane, moveTask }) => html`
       ×
     </button>
 
-    <${Dropzone} moveTask=${(taskId) => moveTask(taskId, lane._id, 0)}>
+    <${Dropzone} moveTask=${(taskId) => moveTask(taskId, lane, 0)}>
       <div class="pt-2 font-bold">
         ${lane.name}
         <span class="inline-block ml-1 px-2 rounded-full bg-slate-200">
@@ -29,7 +29,7 @@ export default ({ lane, removeLane, moveTask }) => html`
       (task, index) => html`
         <${Task} task=${task} />
         <${Dropzone}
-          moveTask=${(taskId) => moveTask(taskId, lane._id, index + 1)}
+          moveTask=${(taskId) => moveTask(taskId, lane, index + 1)}
         />
       `
     )}

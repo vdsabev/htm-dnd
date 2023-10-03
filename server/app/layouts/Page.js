@@ -15,11 +15,7 @@ module.exports = ({ head = '', body = '' } = {}) =>
         class="fixed bottom-0 rounded-t bg-purple-600 text-white px-2 py-1 text-center"
         style="left: calc(50% - 200px); right: calc(50% - 200px); font-variant: small-caps"
       >
-        made with
-        <a class="mx-1 font-bold" href="https://htmx.org" target="_blank">
-          htmx
-        </a>
-        by
+        made with 💻 by
         <a
           class="mx-1 font-bold"
           href="https://twitter.com/vdsabev"
@@ -28,6 +24,5 @@ module.exports = ({ head = '', body = '' } = {}) =>
           @vdsabev
         </a>
       </div>
-      <script src="/lib/htmx.min.js"></script>
     `,
   });

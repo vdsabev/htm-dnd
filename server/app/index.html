@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Drag & Drop</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👋</text></svg>"
+    />
+    <link href="/style.css" rel="stylesheet" />
+    <base href="/" />
+  </head>
+
+  <body>
+    <main class="flex h-full gap-4"></main>
+    <footer
+      class="fixed bottom-0 px-2 py-1 text-center text-white bg-purple-600 rounded-t"
+      style="
+        left: calc(50% - 200px);
+        right: calc(50% - 200px);
+        font-variant: small-caps;
+      "
+    >
+      made with 💻 by
+      <a
+        class="mx-1 font-bold"
+        href="https://twitter.com/vdsabev"
+        target="_blank"
+      >
+        @vdsabev
+      </a>
+    </footer>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "html": "/lib/htm/preact/standalone.module.js",
+          "overstate": "/lib/overstate/store.js"
+        }
+      }
+    </script>
+    <script>
+      window.app = {
+        data: {
+          _id: '<%= board._id %>',
+          lanes: <%- JSON.stringify(board.lanes) %>,
+          newLane: <%- JSON.stringify(constants.NEW_LANE) %>,
+        },
+      };
+    </script>
+    <script type="module" src="/src/app.js"></script>
+  </body>
+</html>

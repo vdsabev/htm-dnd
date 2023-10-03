@@ -27,6 +27,15 @@ const response = {
       body: Array.isArray(body) ? body.join('') : body,
     };
   },
+  json(body) {
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    };
+  },
   noContent() {
     return {
       statusCode: 204,
@@ -34,7 +43,6 @@ const response = {
   },
   notFound() {
     return {
-      ...response.html('Not Found'),
       statusCode: 404,
     };
   },

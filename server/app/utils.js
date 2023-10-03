@@ -1,3 +1,5 @@
+exports.parseJSONData = JSON.parse;
+
 exports.parseFormData = (encodedQueryString) => {
   const formData = {};
 

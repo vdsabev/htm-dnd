@@ -27,7 +27,6 @@ module.exports = {
   // Board
   async getBoard(/** @type {string} */ boardId) {
     const db = await connect();
-    // TODO: Create a new board if the ID doesn't exist
     return db.model('board').findById(boardId).lean();
   },
 
@@ -42,14 +41,13 @@ module.exports = {
   // Lane
   async createLane(/** @type {string} */ boardId) {
     const db = await connect();
-    return db
+    const lane = { _id: new mongoose.Types.ObjectId(), ...constants.NEW_LANE };
+    await db
       .model('board')
-      .findOneAndUpdate(
-        { _id: boardId },
-        { $push: { lanes: constants.NEW_LANE } },
-        { new: true }
-      )
+      .updateOne({ _id: boardId }, { $push: { lanes: lane } })
       .lean();
+
+    return lane;
   },
 
   async deleteLane(
@@ -57,13 +55,9 @@ module.exports = {
     /** @type {string} */ laneId
   ) {
     const db = await connect();
-    return db
+    await db
       .model('board')
-      .findOneAndUpdate(
-        { _id: boardId },
-        { $pull: { lanes: { _id: laneId } } },
-        { new: true }
-      )
+      .updateOne({ _id: boardId }, { $pull: { lanes: { _id: laneId } } })
       .lean();
   },
 
@@ -74,8 +68,7 @@ module.exports = {
     /** @type {string} */ text
   ) {
     const db = await connect();
-    const task = { _id: mongoose.Types.ObjectId(), text };
-
+    const task = { _id: new mongoose.Types.ObjectId(), text };
     await db
       .model('board')
       .updateOne({ _id: boardId, 'lanes._id': laneId }, { $push: task })

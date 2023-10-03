@@ -1,7 +1,7 @@
+const ejs = require('ejs');
+
 const constants = require('./constants');
 const db = require('./db');
-const Page = require('./layouts/Page');
-const pages = require('./pages');
 const utils = require('./utils');
 
 module.exports = {
@@ -10,27 +10,22 @@ module.exports = {
     async get(request, response) {
       const board = await db.getBoard(request.params.boardId);
       return response.html(
-        await Page({ body: await pages.App({ board, constants }) })
+        await ejs.renderFile(`${__dirname}/index.html`, { board, constants })
       );
     },
 
     async put(request, response) {
-      const data = utils.parseFormData(request.body);
+      const data = utils.parseJSONData(request.body);
       const board = await db.updateBoard(request.params.boardId, data);
-      return response.html(await pages.App({ board, constants }));
+      return response.json(board);
     },
   },
 
   // Lanes
   '/boards/:boardId/lanes': {
     async post(request, response) {
-      await db.createLane(request.params.boardId);
-      return response.html(
-        await pages.Lane({
-          board: { _id: request.params.boardId },
-          lane: constants.NEW_LANE,
-        })
-      );
+      const lane = await db.createLane(request.params.boardId);
+      return response.json(lane);
     },
   },
 
@@ -49,23 +44,19 @@ module.exports = {
         request.params.laneId,
         request.body
       );
-      return response.html(
-        await pages.Task({ lane: { _id: request.params.laneId }, task })
-      );
+      return response.json(task);
     },
   },
 
   '/boards/:boardId/lanes/:laneId/tasks/:taskId': {
-    async put(request, response) {
+    async patch(request, response) {
       const task = await db.updateTask(
         request.params.boardId,
         request.params.laneId,
         request.params.taskId,
         request.body
       );
-      return response.html(
-        await pages.Task({ lane: { _id: request.params.laneId }, task })
-      );
+      return response.json(task);
     },
 
     async delete(request, response) {

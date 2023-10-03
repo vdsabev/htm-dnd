@@ -7,7 +7,10 @@ export default ({ board }) => html`
       (lane) => html`
         <${Lane}
           lane=${lane}
+          updateLane=${board.updateLane}
           removeLane=${board.removeLane}
+          addTask=${board.addTask}
+          updateTask=${board.updateTask}
           moveTask=${board.moveTask}
         />
       `

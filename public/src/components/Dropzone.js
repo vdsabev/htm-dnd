@@ -6,10 +6,7 @@ export default ({ moveTask, children }) => html`
     ondragover=${(event) => {
       // Set dragover to trigger dropzone when hovering over child elements
       event.preventDefault();
-      if (!event.currentTarget.hasAttribute('data-dragenter')) {
-        // Prevents flickering
-        event.currentTarget.setAttribute('data-dragenter', true);
-      }
+      event.currentTarget.setAttribute('data-dragenter', true);
     }}
     ondragenter=${(event) => {
       event.preventDefault();

@@ -3,9 +3,10 @@
   "name": "htmx-dnd",
   "version": "1.0.0",
   "scripts": {
-    "start": "nodemon --watch server --ext html,js,css --exec \"npm run build && netlify dev --no-open\"",
+    "start": "nodemon --watch public/src --watch server --ext html,js --exec \"npm run build && netlify dev --no-open\"",
     "build": "npm run build.style",
-    "build.style": "tailwindcss -i ./server/app/style.css -o ./public/style.css"
+    "build.style": "tailwindcss -i ./server/app/style.css -o ./public/style.css",
+    "test": "node public/src/actions.test.js"
   },
   "devDependencies": {
     "netlify-cli": "16.3.3",

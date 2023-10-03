@@ -3,7 +3,14 @@ import { html } from 'html';
 import Dropzone from './Dropzone.js';
 import Task from './Task.js';
 
-export default ({ lane, removeLane, moveTask }) => html`
+export default ({
+  lane,
+  updateLane,
+  removeLane,
+  addTask,
+  updateTask,
+  moveTask,
+}) => html`
   <div
     class="relative flex flex-col min-w-[var(--lane-width)] border rounded w-[var(--lane-width)] bg-slate-100 px-3 shadow-inner overflow-y-auto"
   >
@@ -18,16 +25,35 @@ export default ({ lane, removeLane, moveTask }) => html`
 
     <${Dropzone} moveTask=${(taskId) => moveTask(taskId, lane, 0)}>
       <div class="pt-2 font-bold">
-        ${lane.name}
+        <input
+          class="bg-transparent"
+          type="text"
+          value=${lane.name}
+          oninput=${(event) => updateLane(lane, event.currentTarget.value)}
+        />
+
         <span class="inline-block ml-1 px-2 rounded-full bg-slate-200">
           ${lane.tasks.length}
         </span>
       </div>
+
+      <${Task}
+        task=${{ text: '' }}
+        contenteditable
+        onblur=${(event) => {
+          addTask(lane, event.currentTarget.textContent);
+          event.currentTarget.textContent = '';
+        }}
+      />
     <//>
 
     ${lane.tasks.map(
       (task, index) => html`
-        <${Task} task=${task} />
+        <${Task}
+          task=${task}
+          contenteditable
+          onblur=${(event) => updateTask(task, event.currentTarget.textContent)}
+        />
         <${Dropzone}
           moveTask=${(taskId) => moveTask(taskId, lane, index + 1)}
         />

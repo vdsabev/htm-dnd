@@ -3,6 +3,7 @@ import { html } from 'html';
 import Dropzone from './Dropzone.js';
 import Task from './Task.js';
 
+// TODO: Allow reordering lanes
 export default ({
   lane,
   updateLane,
@@ -45,6 +46,13 @@ export default ({
         onblur=${(event) => {
           addTask(lane, event.currentTarget.textContent);
           event.currentTarget.textContent = '';
+        }}
+        onkeypress=${(event) => {
+          if (event.key === 'Enter' && !event.shiftKey) {
+            addTask(lane, event.currentTarget.textContent);
+            event.currentTarget.textContent = '';
+            event.preventDefault();
+          }
         }}
       />
     <//>

@@ -3,7 +3,7 @@ import html from 'html';
 import Dropzone from './Dropzone.js';
 import Task from './Task.js';
 
-export default ({ lane }) => html`
+export default ({ lane, moveTask }) => html`
   <div
     class="relative flex flex-col min-w-[var(--lane-width)] border rounded w-[var(--lane-width)] bg-slate-100 px-3 shadow-inner overflow-y-auto"
   >
@@ -15,7 +15,7 @@ export default ({ lane }) => html`
       ×
     </button>
 
-    <${Dropzone}>
+    <${Dropzone} moveTask=${(taskId) => moveTask(taskId, lane._id, 0)}>
       <div class="pt-2 font-bold">
         <span>${lane.name}</span>
         <span class="inline-block px-2 rounded-full bg-slate-200">
@@ -25,9 +25,11 @@ export default ({ lane }) => html`
     <//>
 
     ${lane.tasks.map(
-      (task) => html`
+      (task, index) => html`
         <${Task} task=${task} />
-        <${Dropzone} />
+        <${Dropzone}
+          moveTask=${(taskId) => moveTask(taskId, lane._id, index + 1)}
+        />
       `
     )}
   </div>

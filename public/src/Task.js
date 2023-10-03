@@ -5,11 +5,11 @@ export default ({ task }) => {
     <div
       class="px-3 py-2 whitespace-pre-line bg-white border rounded-sm shadow-sm select-none cursor-grab active:cursor-grabbing"
       draggable="true"
-      ondragstart="
-      event.stopPropagation(); // Prevent parent node from receiving child events
-      event.dataTransfer.setData('text/plain', '${task._id}');
-      event.dataTransfer.effectAllowed = 'move';
-    "
+      ondragstart=${function () {
+        event.stopPropagation(); // Prevent parent node from receiving child events
+        event.dataTransfer.setData('text/plain', task._id);
+        event.dataTransfer.effectAllowed = 'move';
+      }}
     >
       ${task.text}
     </div>

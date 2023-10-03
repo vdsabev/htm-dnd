@@ -84,6 +84,43 @@
               lanes: [...this.lanes, { name: 'New Lane', tasks: [] }],
             };
           },
+
+          moveTask(taskId, laneId, index) {
+            const oldLane = this.lanes.find((lane) =>
+              lane.tasks.find((task) => task._id === taskId)
+            );
+            const taskIndex = oldLane.tasks.findIndex(
+              (task) => task._id === taskId
+            );
+            const task = oldLane.tasks[taskIndex];
+
+            return {
+              lanes: this.lanes
+                .map((lane) =>
+                  lane._id === oldLane._id
+                    ? {
+                        ...lane,
+                        tasks: [
+                          ...lane.tasks.slice(0, taskIndex),
+                          ...lane.tasks.slice(taskIndex + 1),
+                        ],
+                      }
+                    : lane
+                )
+                .map((lane) =>
+                  lane._id === laneId
+                    ? {
+                        ...lane,
+                        tasks: [
+                          ...lane.tasks.slice(0, index),
+                          task,
+                          ...lane.tasks.slice(index),
+                        ],
+                      }
+                    : lane
+                ),
+            };
+          },
         },
       });
 

@@ -10,7 +10,7 @@ function h(type, props, ...children) {
   Object.keys(props || {}).forEach((key) => {
     const prop = props[key];
     if (typeof prop === 'function') {
-      element.addEventListener(key.replace(/^on/, ''), prop);
+      element.addEventListener(key.replace(/^on/, ''), prop.bind(element)); // TODO: Try without the bind
     } else {
       element.setAttribute(key, prop);
     }

@@ -6,7 +6,8 @@
     "start": "nodemon --watch public/src --watch server --ext html,js --exec \"npm run build && netlify dev --no-open\"",
     "build": "npm run build.style",
     "build.style": "tailwindcss -i ./server/app/style.css -o ./public/style.css",
-    "test": "node public/src/actions.test.js"
+    "test": "nodemon --watch public/src --ext js public/src/actions.test.js",
+    "test.once": "node public/src/actions.test.js"
   },
   "devDependencies": {
     "netlify-cli": "16.3.3",

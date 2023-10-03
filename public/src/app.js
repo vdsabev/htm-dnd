@@ -4,12 +4,9 @@ import { createStore } from 'overstate';
 import Board from './components/Board.js';
 import http from './http.js';
 
+// Store
 const store = createStore({
   ...window.app.board,
-
-  set(model) {
-    return model;
-  },
 
   // Lanes
   addLane() {
@@ -20,67 +17,61 @@ const store = createStore({
 
   removeLane(lane) {
     return {
-      lanes: this.lanes.filter((l) => l !== lane),
+      lanes: remove(this.lanes, lane),
     };
   },
 
   // Tasks
   moveTask(taskId, toLane, toIndex) {
-    const fromLane = this.lanes.find((lane) =>
-      lane.tasks.find((task) => task._id === taskId)
-    );
-    const fromIndex = fromLane.tasks.findIndex(
-      (task) => task._id === taskId
-    );
-    const task = fromLane.tasks[fromIndex];
+    const fromLane = this.lanes.find((lane) => lane.tasks.find(byId(taskId)));
+    const task = fromLane.tasks.find(byId(taskId));
 
     return {
       lanes: this.lanes
         .map((lane) =>
-          lane._id === fromLane._id
-            ? {
-                ...lane,
-                tasks: [
-                  ...lane.tasks.slice(0, fromIndex),
-                  ...lane.tasks.slice(fromIndex + 1),
-                ],
-              }
+          lane === fromLane
+            ? { ...lane, tasks: remove(lane.tasks, task) }
             : lane
         )
         .map((lane) =>
           lane === toLane
-            ? {
-                ...lane,
-                tasks: [
-                  ...lane.tasks.slice(0, toIndex),
-                  task,
-                  ...lane.tasks.slice(toIndex),
-                ],
-              }
+            ? { ...lane, tasks: insert(lane.tasks, task, toIndex) }
             : lane
         ),
     };
   },
 });
 
+// Utils
+const notEqual = (item1) => (item2) => item1 !== item2;
+const byId = (id) => (object) => object._id === id;
+const remove = (array, item) => array.filter(notEqual(item));
+const insert = (array, item, index) => [
+  ...array.slice(0, index),
+  item,
+  ...array.slice(index),
+];
+
+// Render app
 const mount = (board) =>
   render(html`<${Board} board=${board} />`, document.querySelector('main'));
 mount(store.model);
 
 store.subscribe(mount);
 
+// Save data
 /** @type {number | undefined} */ let httpTimer;
-let lastStoredData = JSON.stringify(store.model);
+let lastSavedData = JSON.stringify(store.model);
 store.subscribe((board) => {
   window.clearTimeout(httpTimer);
   httpTimer = setTimeout(() => {
     const body = JSON.stringify(board);
-    if (lastStoredData === body) return;
+    if (lastSavedData === body) return; // No need to save data
 
     http
       .patch(`/boards/${board._id}`, { body })
       .then((data) => {
-        lastStoredData = JSON.stringify(data);
+        lastSavedData = JSON.stringify(data);
         store.set(data);
       })
       .catch((error) => {

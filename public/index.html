@@ -12,49 +12,7 @@
   </head>
 
   <body>
-    <app-board>
-      <app-lane title="⛏️ To Do">
-        <app-task>Ignore the haters 👊</app-task>
-        <app-task>Post dank memes 🫡</app-task>
-      </app-lane>
-
-      <app-lane title="⏳ In Progress">
-        <app-task>Code with vanilla JS</app-task>
-      </app-lane>
-
-      <app-lane title="✅ Done">
-        <app-task>Drink coffee 🍵</app-task>
-        <app-task>Stretch 🏃</app-task>
-        <app-task>Wake up 🌞</app-task>
-      </app-lane>
-    </app-board>
-
-    <template name="app-board">
-      <form class="flex h-full gap-4 p-4" name="board">
-        <slot></slot>
-      </form>
-    </template>
-
-    <template name="app-lane">
-      <div
-        class="relative flex flex-col min-w-[var(--lane-width)] border rounded w-[var(--lane-width)] bg-slate-100 px-3 shadow-inner overflow-y-auto"
-      >
-        <button
-          type="button"
-          class="absolute px-3 py-1 border-transparent rounded-full top-2 right-1 hover:bg-white hover:border-slate-500"
-          title="Delete"
-        >
-          ×
-        </button>
-        {{title}}
-        <slot></slot>
-      </div>
-    </template>
-
-    <template name="app-task">
-      <slot></slot>
-    </template>
-
+    <main class="flex h-full gap-4"></main>
     <footer
       class="fixed bottom-0 px-2 py-1 text-center text-white bg-purple-600 rounded-t"
       style="
@@ -73,22 +31,67 @@
       </a>
     </footer>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const templates = document.querySelectorAll('template[name]');
-        templates.forEach((template) => {
-          customElements.define(
-            template.getAttribute('name'),
-            class extends HTMLElement {
-              constructor() {
-                super();
-                this.style.display = 'contents'; // Prevent the custom element from affecting styling
-                this.appendChild(template.content.cloneNode(true));
-              }
-            }
-          );
-        });
+    <script type="importmap">
+      {
+        "imports": {
+          "htm": "/lib/htm.js",
+          "overstate": "/lib/overstate/store.js",
+          "html": "/src/html.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import html from 'html';
+      import { createStore } from 'overstate';
+
+      import Board from './src/Board.js';
+
+      const store = createStore({
+        board: {
+          _id: '6519418024dcd715e1b25f5f',
+          lanes: [
+            {
+              _id: '651952a7e8b0a1d2519bf4bb',
+              name: '⛏️ To Do',
+              tasks: [
+                { _id: '6519418024dcd715e1b25f1f', text: 'Ignore haters 👊' },
+                { _id: '6519418024dcd715e1b25f2f', text: 'Post dank memes 🫡' },
+              ],
+            },
+            {
+              _id: '651952a7e8b0a1d2519bf4bc',
+              name: '⏳ In Progress',
+              tasks: [
+                {
+                  _id: '6519418024dcd715e1b25f3f',
+                  text: 'Code fun projects 💻',
+                },
+              ],
+            },
+            {
+              _id: '651952a7e8b0a1d2519bf4bd',
+              name: '✅ Done',
+              tasks: [
+                { _id: '6519418024dcd715e1b25f4f', text: 'Drink coffee 🍵' },
+                { _id: '6519418024dcd715e1b25f7f', text: 'Stretch 🏃' },
+                { _id: '6519418024dcd715e1b25f6f', text: 'Wake up 🌞' },
+              ],
+            },
+          ],
+
+          addLane() {
+            return {
+              lanes: [...this.lanes, { name: 'New Lane', tasks: [] }],
+            };
+          },
+        },
       });
+
+      // TODO: Preserve some DOM, e.g. focused state
+      store.subscribe((model) =>
+        document.querySelector('main').replaceChildren(Board(model))
+      );
+      store.update();
     </script>
   </body>
 </html>

@@ -5,9 +5,9 @@ export default ({ task, ...props }) => html`
     ...${props}
     class="
       ${props.class || ''}
-      px-3 py-2 whitespace-pre-line bg-white border rounded-sm shadow-sm select-none cursor-grab active:cursor-grabbing active:caret-transparent
+      px-3 py-2 whitespace-pre-line bg-white border rounded-sm shadow-sm select-none cursor-grab active:cursor-grabbing active:caret-transparent empty:cursor-text
     "
-    draggable="true"
+    draggable=${!!task.text}
     ondragstart=${(event) => {
       event.stopPropagation(); // Prevent parent node from receiving child events
       event.dataTransfer.setData('text/plain', task._id);

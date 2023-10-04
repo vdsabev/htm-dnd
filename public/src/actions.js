@@ -1,4 +1,9 @@
 export default {
+  // Board
+  set(board) {
+    return board;
+  },
+
   // Lanes
   addLane() {
     return {
@@ -12,14 +17,14 @@ export default {
     };
   },
 
-  updateLane(lane, name) {
+  updateLane(lane, /** @type {string} */ name) {
     return {
       lanes: this.lanes.map((l) => (l === lane ? { ...l, name } : l)),
     };
   },
 
   // Tasks
-  addTask(lane, text) {
+  addTask(lane, /** @type {string} */ text) {
     return text
       ? {
           lanes: this.lanes.map((l) =>
@@ -29,7 +34,7 @@ export default {
       : {};
   },
 
-  updateTask(task, text) {
+  updateTask(task, /** @type {string} */ text) {
     return {
       lanes: this.lanes.map((lane) => ({
         ...lane,

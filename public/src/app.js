@@ -1,43 +1,57 @@
-import { html, render } from 'html';
-import { createStore } from 'overstate';
+import { html, render, useEffect, useMemo, useReducer, useRef } from 'html';
 
 import Board from './components/Board.js';
 import actions from './actions.js';
 import http from './http.js';
 
-// Store
-const store = createStore({
-  ...window.app.board,
-  ...actions,
-});
-
 // Render app
-const mount = (board) =>
-  render(html`<${Board} board=${board} />`, document.querySelector('main'));
-mount(store.model);
+function reducer(state, { type, args }) {
+  return { ...state, ...actions[type]?.call(state, ...args) };
+}
 
-store.subscribe(mount);
+const App = () => {
+  const [board, dispatch] = useReducer(reducer, window.app.board);
 
-// Save data
-/** @type {number | undefined} */ let httpTimer;
-let lastSavedData = JSON.stringify(store.model);
-store.subscribe((board) => {
-  window.clearTimeout(httpTimer);
-  httpTimer = setTimeout(() => {
-    const body = JSON.stringify(board);
-    if (lastSavedData === body) return; // No need to save data
+  /** @type {import('./types').ProxiedFunctions<typeof actions>} */
+  const proxiedActions = useMemo(
+    () =>
+      Object.keys(actions).reduce(
+        (proxiedActions, key) => ({
+          ...proxiedActions,
+          [key]: (...args) => dispatch({ type: key, args }),
+        }),
+        {}
+      ),
+    [dispatch]
+  );
 
-    http
-      .patch(`/boards/${board._id}`, { body })
-      .then((data) => {
-        lastSavedData = JSON.stringify(data);
-        if (lastSavedData !== body) {
-          // Sync any discrepancies
-          store.set(data);
-        }
-      })
-      .catch((error) => {
-        window.alert(error.toString());
-      });
-  }, 300);
-});
+  // Save data
+  const lastSavedBoard = useRef(null);
+  useEffect(() => {
+    lastSavedBoard.value ||= JSON.stringify(window.app.board);
+
+    const httpTimer = setTimeout(() => {
+      const body = JSON.stringify(board);
+      if (lastSavedBoard.value === body) return; // No need to save data
+
+      http
+        .patch(`/boards/${board._id}`, { body })
+        .then((board) => {
+          lastSavedBoard.value = JSON.stringify(board);
+          if (lastSavedBoard.value !== body) {
+            // Sync any discrepancies
+            proxiedActions.set(board);
+          }
+        })
+        .catch((error) => {
+          window.alert(error.toString());
+        });
+    }, 300);
+
+    return () => window.clearTimeout(httpTimer);
+  }, [board]);
+
+  return html`<${Board} board=${board} actions=${proxiedActions} />`;
+};
+
+render(html`<${App} />`, document.querySelector('main'));

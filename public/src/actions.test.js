@@ -108,7 +108,7 @@ const suite = {
       );
     },
 
-    'should return empty object when text is not provided'() {
+    'should not change tasks when text is not provided'() {
       assert.deepStrictEqual(
         actions.addTask.call(data.withLanes, data.withLanes.lanes[0], ''),
         {}

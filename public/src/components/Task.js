@@ -1,4 +1,4 @@
-import { html } from '../../lib/preact';
+import { html } from '../../lib/preact.js';
 
 export default ({ task, ...props }) => html`
   <div

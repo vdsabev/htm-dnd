@@ -1,4 +1,4 @@
-import { html } from '../../lib/preact';
+import { html } from '../../lib/preact.js';
 
 import Dropzone from './Dropzone.js';
 import Task from './Task.js';

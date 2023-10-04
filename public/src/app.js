@@ -1,4 +1,4 @@
-import { html, render, useEffect, useMemo, useReducer, useRef } from '../lib/preact';
+import { html, render, useEffect, useMemo, useReducer, useRef } from '../lib/preact.js';
 
 import Board from './components/Board.js';
 import actions from './actions.js';

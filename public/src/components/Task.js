@@ -1,11 +1,11 @@
-import { html } from 'html';
+import { html } from '../../lib/preact';
 
 export default ({ task, ...props }) => html`
   <div
     ...${props}
     class="
       ${props.class || ''}
-      px-3 py-2 whitespace-pre-line bg-white border rounded-sm shadow-sm select-none cursor-grab active:cursor-grabbing
+      px-3 py-2 whitespace-pre-line bg-white border rounded-sm shadow-sm select-none cursor-grab active:cursor-grabbing active:caret-transparent
     "
     draggable="true"
     ondragstart=${(event) => {

@@ -1,4 +1,4 @@
-import { html } from 'html';
+import { html } from '../../lib/preact';
 
 export default ({ moveTask, children }) => html`
   <div

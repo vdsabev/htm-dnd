@@ -1,27 +1,31 @@
-import { html, render, useEffect, useMemo, useReducer, useRef } from 'html';
+import { html, render, useEffect, useMemo, useReducer, useRef } from '../lib/preact';
 
 import Board from './components/Board.js';
 import actions from './actions.js';
 import http from './http.js';
 
-// Render app
+// State management
 function reducer(state, { type, args }) {
   return { ...state, ...actions[type]?.call(state, ...args) };
 }
 
+function createDispatchActions(dispatch) {
+  return Object.keys(actions).reduce(
+    (dispatchActions, key) => ({
+      ...dispatchActions,
+      [key]: (...args) => dispatch({ type: key, args }),
+    }),
+    {}
+  );
+}
+
+// Render app
 const App = () => {
   const [board, dispatch] = useReducer(reducer, window.app.board);
 
-  /** @type {import('./types').ProxiedFunctions<typeof actions>} */
+  /** @type {typeof actions} */
   const proxiedActions = useMemo(
-    () =>
-      Object.keys(actions).reduce(
-        (proxiedActions, key) => ({
-          ...proxiedActions,
-          [key]: (...args) => dispatch({ type: key, args }),
-        }),
-        {}
-      ),
+    () => createDispatchActions(dispatch),
     [dispatch]
   );
 

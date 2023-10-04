@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-/** @type {mongoose} */
+/** @type {Promise<typeof mongoose>} */
 let connection = null;
 
 const Task = new mongoose.Schema({ text: String });

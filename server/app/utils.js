@@ -1,6 +1,6 @@
 exports.parseJSONData = JSON.parse;
 
-exports.parseFormData = (encodedQueryString) => {
+exports.parseFormData = (/** @type {string} */ encodedQueryString) => {
   const formData = {};
 
   const pathValuePairs = encodedQueryString.split('&');

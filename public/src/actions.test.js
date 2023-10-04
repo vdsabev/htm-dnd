@@ -269,7 +269,8 @@ const suite = {
 };
 
 for (const [description, tests] of Object.entries(suite)) {
-  console.log(`\n${description}`);
+  console.log('');
+  console.log(description);
   for (const [title, test] of Object.entries(tests)) {
     try {
       test();
@@ -280,3 +281,4 @@ for (const [description, tests] of Object.entries(suite)) {
     }
   }
 }
+console.log('');

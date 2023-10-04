@@ -1,6 +1,14 @@
+/** @typedef {import('./types').Board} Board */
+/** @typedef {import('./types').Lane} Lane */
+/** @typedef {import('./types').Task} Task */
+
 export default {
+  // Only used for type checking
+  /** @type {string} */ _id: '',
+  /** @type {Lane[]} */ lanes: [],
+
   // Board
-  set(board) {
+  set(/** @type {Partial<Board>} */ board) {
     return board;
   },
 
@@ -11,20 +19,20 @@ export default {
     };
   },
 
-  removeLane(lane) {
+  removeLane(/** @type {Lane} */ lane) {
     return {
       lanes: remove(this.lanes, lane),
     };
   },
 
-  updateLane(lane, /** @type {string} */ name) {
+  updateLane(/** @type {Lane} */ lane, /** @type {string} */ name) {
     return {
       lanes: this.lanes.map((l) => (l === lane ? { ...l, name } : l)),
     };
   },
 
   // Tasks
-  addTask(lane, /** @type {string} */ text) {
+  addTask(/** @type {Lane} */ lane, /** @type {string} */ text) {
     return text
       ? {
           lanes: this.lanes.map((l) =>
@@ -34,7 +42,7 @@ export default {
       : {};
   },
 
-  updateTask(task, /** @type {string} */ text) {
+  updateTask(/** @type {Task} */ task, /** @type {string} */ text) {
     return {
       lanes: this.lanes.map((lane) => ({
         ...lane,
@@ -45,7 +53,11 @@ export default {
     };
   },
 
-  moveTask(taskId, toLane, toIndex) {
+  moveTask(
+    /** @type {string} */ taskId,
+    /** @type {Lane} */ toLane,
+    /** @type {number} */ toIndex
+  ) {
     const fromLane = this.lanes.find((lane) => lane.tasks.find(byId(taskId)));
     const fromIndex = fromLane.tasks.findIndex(byId(taskId));
 
@@ -78,8 +90,14 @@ export default {
 
 // Utils
 const notEqual = (item1) => (item2) => item1 !== item2;
-const byId = (id) => (object) => object._id === id;
+
+const byId = (/** @type {any} */ id) => (/** @type {{ _id: any }} */ object) =>
+  object._id === id;
+
+/** @type {<T>(array: T[], item: T) => T[]} */
 const remove = (array, item) => array.filter(notEqual(item));
+
+/** @type {<T>(array: T[], item: T, index: number) => T[]} */
 const insert = (array, item, index) => [
   ...array.slice(0, index),
   item,

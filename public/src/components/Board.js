@@ -1,4 +1,5 @@
-import { html } from 'html';
+import { html } from '../../lib/preact';
+
 import Lane from './Lane.js';
 
 export default ({ board, actions }) => html`

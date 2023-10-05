@@ -1,17 +1,9 @@
 import { html } from '../../lib/preact.js';
 
-const classesByDirection = {
-  horizontal:
-    'py-1 after:h-2 [&[data-dragenter]]:after:bg-gradient-to-r last:h-full',
-  vertical:
-    'px-1 after:w-2 after:h-full [&[data-dragenter]]:after:bg-gradient-to-b',
-};
-
 export default ({ type, direction, move, children, ...props }) => html`
   <div
     ...${props}
-    class="${props.class || ''} ${classesByDirection[direction] ||
-    classesByDirection.horizontal} after:block after:h-2 after:rounded-sm after:from-sky-700 after:via-sky-400 after:to-sky-700"
+    class="${props.class || ''} ${direction || 'horizontal'}"
     ondragover=${(event) => {
       event.preventDefault();
 
@@ -42,6 +34,42 @@ export default ({ type, direction, move, children, ...props }) => html`
       event.currentTarget.removeAttribute('data-dragenter');
     }}
   >
+    <style>
+      :scope.horizontal {
+        padding: 0.25rem 0;
+      }
+
+      :scope.horizontal:last-of-type {
+        height: 100%;
+      }
+
+      :scope.vertical {
+        padding: 0 0.25rem;
+      }
+
+      :scope.horizontal::after {
+        width: 100%;
+        height: 0.5rem;
+      }
+
+      :scope.vertical::after {
+        width: 0.5rem;
+        height: 100%;
+      }
+
+      :scope::after {
+        content: '';
+        display: block;
+        border-radius: 2px;
+        background-color: transparent;
+        transition: background-color 50ms linear;
+      }
+
+      :scope[data-dragenter]::after {
+        background-color: var(--primary);
+      }
+    </style>
+
     ${children}
   </div>
 `;

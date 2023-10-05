@@ -21,10 +21,27 @@ export default ({ board, actions }) => html`
     `
   )}
 
-  <div class="min-w-[var(--lane-width)]">
+  <div>
+    <style>
+      :scope {
+        min-width: var(--lane-width);
+      }
+
+      :scope button {
+        border-radius: 4px;
+        border-width: 1px;
+        background-color: var(--neutral-0);
+        padding: 0.75rem;
+        transition: padding 150ms ease-in-out;
+      }
+
+      :scope button:hover {
+        padding-right: calc(var(--lane-width) - 2.5rem);
+      }
+    </style>
+
     <button
       type="button"
-      class="self-start p-3 bg-white border rounded text-left hover:pr-[calc(var(--lane-width)-2.5rem)] transition-[padding]"
       onclick=${(event) => {
         actions.addLane();
         event.currentTarget.scrollIntoView({ behavior: 'smooth' });

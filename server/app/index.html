@@ -8,30 +8,49 @@
       rel="icon"
       href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👋</text></svg>"
     />
-    <link href="/style.css" rel="stylesheet" />
     <base href="/" />
+    <link href="/src/style.css" rel="stylesheet" />
   </head>
 
   <body>
-    <main class="flex h-full py-4"></main>
-    <footer
-      class="fixed bottom-0 px-2 py-1 text-center text-white bg-purple-600 rounded-t"
-      style="
-        left: calc(50% - 200px);
-        right: calc(50% - 200px);
-        font-variant: small-caps;
-      "
-    >
+    <main>
+      <style>
+        :scope {
+          display: flex;
+          height: 100%;
+          padding: 1rem 0;
+        }
+      </style>
+    </main>
+
+    <footer>
+      <style>
+        :scope {
+          position: fixed;
+          bottom: 0;
+          left: calc(50% - 200px);
+          right: calc(50% - 200px);
+
+          border-radius: 4px 4px 0 0;
+          background-color: var(--primary);
+          padding: 0.25rem 0.5rem;
+
+          color: white;
+          text-align: center;
+          font-variant: small-caps;
+        }
+
+        :scope a {
+          margin: 0 0.25rem;
+          font-weight: bold;
+        }
+      </style>
+
       made with 💻 by
-      <a
-        class="mx-1 font-bold"
-        href="https://twitter.com/vdsabev"
-        target="_blank"
-      >
-        @vdsabev
-      </a>
+      <a href="https://twitter.com/vdsabev" target="_blank">@vdsabev</a>
     </footer>
 
+    <script src="/lib/css-scope-inline.js"></script>
     <script>
       window.app = {
         board: <%- JSON.stringify(board) %>,

@@ -3,17 +3,13 @@
   "name": "htmx-dnd",
   "version": "1.0.0",
   "scripts": {
-    "start": "concurrently \"npm run build.style -- --watch\" \"netlify dev --no-open\"",
-    "build": "npm run build.style",
-    "build.style": "tailwindcss -i ./server/app/style.css -o ./public/style.css",
+    "start": "netlify dev --no-open",
     "test": "node --watch public/src/actions.test.js",
     "test.once": "node public/src/actions.test.js"
   },
   "devDependencies": {
     "concurrently": "8.2.1",
-    "netlify-cli": "16.5.1",
-    "postcss-import": "15.1.0",
-    "tailwindcss": "3.3.3"
+    "netlify-cli": "16.5.1"
   },
   "dependencies": {
     "ejs": "3.1.9",

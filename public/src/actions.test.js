@@ -86,6 +86,57 @@ const suite = {
     },
   },
 
+  moveLane: {
+    'should not move lane before itself'() {
+      assert.deepStrictEqual(
+        actions.moveLane.call(data.withLanes, data.withLanes.lanes[0]._id, 0),
+        data.withLanes
+      );
+    },
+
+    'should not move lane after itself'() {
+      assert.deepStrictEqual(
+        actions.moveLane.call(
+          data.withLanes,
+          data.withLanes.lanes[0]._id,
+          data.withLanes.lanes[0],
+          1
+        ),
+        data.withLanes
+      );
+    },
+
+    'should move first lane to the end'() {
+      assert.deepStrictEqual(
+        actions.moveLane.call(data.withLanes, data.withLanes.lanes[0]._id, 1000),
+        {
+          lanes: [
+            data.withLanes.lanes[1],
+            data.withLanes.lanes[2],
+            data.withLanes.lanes[0],
+          ],
+        }
+      );
+    },
+
+    'should not move last lane after the end'() {
+      assert.deepStrictEqual(
+        actions.moveLane.call(
+          data.withLanes,
+          data.withLanes.lanes.at(-1)._id,
+          1000
+        ),
+        {
+          lanes: [
+            data.withLanes.lanes[0],
+            data.withLanes.lanes[1],
+            data.withLanes.lanes[2],
+          ],
+        }
+      );
+    },
+  },
+
   // Tasks
   addTask: {
     'should add new task when text is provided'() {

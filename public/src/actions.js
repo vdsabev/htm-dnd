@@ -31,6 +31,19 @@ export default {
     };
   },
 
+  moveLane(/** @type {string} */ laneId, /** @type {number} */ toIndex) {
+    const fromIndex = this.lanes.findIndex((lane) => lane._id === laneId);
+    const lane = this.lanes[fromIndex];
+
+    return {
+      lanes: insert(
+        remove(this.lanes, lane),
+        lane,
+        fromIndex < toIndex ? toIndex - 1 : toIndex
+      ),
+    };
+  },
+
   // Tasks
   addTask(/** @type {Lane} */ lane, /** @type {string} */ text) {
     return text

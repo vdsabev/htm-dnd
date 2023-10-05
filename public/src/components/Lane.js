@@ -3,12 +3,23 @@ import { html } from '../../lib/preact.js';
 import Dropzone from './Dropzone.js';
 import Task from './Task.js';
 
-// TODO: Allow reordering lanes
 export default ({ lane, actions }) => html`
   <div
-    class="relative flex flex-col min-w-[var(--lane-width)] border rounded w-[var(--lane-width)] bg-slate-100 px-3 shadow-inner overflow-y-auto"
+    class="relative flex flex-col min-w-[var(--lane-width)] border rounded w-[var(--lane-width)] bg-slate-100 px-3 shadow-inner overflow-y-auto cursor-grab active:cursor-grabbing"
+    draggable="true"
+    ondragstart=${(event) => {
+      event.stopPropagation(); // Prevent parent node from receiving child events
+      event.dataTransfer.setData('text/plain', lane._id);
+      event.dataTransfer.effectAllowed = 'move';
+    }}
+    ondragover=${(event) => {
+      event.preventDefault(); // Prevent cursor from turning into not-allowed
+    }}
   >
-    <${Dropzone} moveTask=${(taskId) => actions.moveTask(taskId, lane, 0)}>
+    <${Dropzone}
+      direction="horizontal"
+      move=${(laneId) => actions.moveTask(laneId, 0)}
+    >
       <div class="pt-2">
         <span
           class="outline-offset-4 font-bold"
@@ -63,7 +74,8 @@ export default ({ lane, actions }) => html`
             actions.updateTask(task, event.currentTarget.textContent)}
         />
         <${Dropzone}
-          moveTask=${(taskId) => actions.moveTask(taskId, lane, index + 1)}
+          direction="horizontal"
+          move=${(taskId) => actions.moveTask(taskId, lane, index + 1)}
         />
       `
     )}

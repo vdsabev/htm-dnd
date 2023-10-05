@@ -1,10 +1,22 @@
 import { html } from '../../lib/preact.js';
 
+import Dropzone from './Dropzone.js';
 import Lane from './Lane.js';
 
 export default ({ board, actions }) => html`
+  <${Dropzone}
+    direction="vertical"
+    move=${(laneId) => actions.moveLane(laneId, 0)}
+  />
+
   ${board.lanes.map(
-    (lane) => html`<${Lane} lane=${lane} actions=${actions} />`
+    (lane, index) => html`
+      <${Lane} lane=${lane} actions=${actions} />
+      <${Dropzone}
+        direction="vertical"
+        move=${(laneId) => actions.moveLane(laneId, index + 1)}
+      />
+    `
   )}
 
   <div class="min-w-[var(--lane-width)]">

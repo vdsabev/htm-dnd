@@ -6,14 +6,12 @@ import Task from './Task.js';
 export default ({ lane, actions, ...props }) => html`
   <div
     ...${props}
-    class="${props.class ||
-    ''} relative flex flex-col min-w-[var(--lane-width)] border rounded w-[var(--lane-width)] bg-slate-100 px-3 shadow-inner overflow-y-auto cursor-grab active:cursor-grabbing"
     draggable="true"
     ondragstart=${(event) => {
       window.app.itemBeingDragged = { type: 'lane', item: lane };
       event.stopPropagation(); // Prevent parent node from receiving child events
       event.dataTransfer.effectAllowed = 'move';
-      event.dataTransfer.setData('text/plain', event.currentTarget.textContent); // Used when dragging into other apps
+      event.dataTransfer.setData('text/plain', event.currentTarget.innerText); // Used when dragging into other apps
     }}
     ondragover=${(event) => {
       event.preventDefault(); // Prevent cursor from turning into not-allowed
@@ -22,30 +20,81 @@ export default ({ lane, actions, ...props }) => html`
       window.app.itemBeingDragged = null;
     }}
   >
+    <style>
+      :scope {
+        cursor: grab;
+        overflow-y: auto;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+
+        box-shadow: var(--shadow) inset;
+        min-width: var(--lane-width);
+        width: var(--lane-width);
+
+        border-radius: 4px;
+        border-width: 1px;
+
+        background-color: var(--neutral-100);
+        padding: 0 0.75rem;
+      }
+
+      :scope:active {
+        cursor: grabbing;
+      }
+    </style>
+
     <${Dropzone}
       type="task"
       direction="horizontal"
       move=${(task) => actions.moveTask(task, 0, lane)}
     >
-      <div class="pt-2">
+      <div>
+        <style>
+          :scope {
+            padding-top: 0.5rem;
+          }
+
+          :scope .title {
+            outline-offset: 4px;
+            font-weight: bold;
+          }
+
+          :scope .count {
+            display: inline-block;
+            border-radius: 9999px;
+            margin-left: 0.25rem;
+            background-color: var(--neutral-200);
+            padding: 0 0.5rem;
+            font-weight: bold;
+          }
+
+          :scope button {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 0.25rem 0.75rem;
+          }
+
+          :scope button:hover {
+            background-color: var(--neutral-0);
+          }
+        </style>
+
         <span
-          class="outline-offset-4 font-bold"
+          class="title"
           contenteditable
-          onblur=${(event) =>
-            actions.updateLane(lane, event.currentTarget.textContent)}
+          onblur=${(event) => {
+            actions.updateLane(lane, event.currentTarget.textContent);
+          }}
         >
           ${lane.name}
         </span>
 
-        <span
-          class="inline-block ml-1 px-2 rounded-full bg-slate-200 font-bold"
-        >
-          ${lane.tasks.length}
-        </span>
+        <span class="count">${lane.tasks.length}</span>
 
         <button
           type="button"
-          class="absolute px-3 py-1 border-transparent top-0 right-0 hover:bg-white hover:border-slate-500"
           title="Remove lane"
           onclick=${() => actions.removeLane(lane)}
         >
@@ -53,23 +102,41 @@ export default ({ lane, actions, ...props }) => html`
         </button>
       </div>
 
-      <${Task}
-        class="mt-3 mb-1 after:text-slate-400 empty:after:content-[attr(data-title)]"
-        task=${{ text: '' }}
-        contenteditable
-        onblur=${(event) => {
-          actions.addTask(lane, event.currentTarget.textContent);
-          event.currentTarget.textContent = '';
-        }}
-        onkeypress=${(event) => {
-          if (event.key === 'Enter' && !event.shiftKey) {
+      <div>
+        <style>
+          :scope .new-task {
+            margin-top: 0.75rem;
+            margin-bottom: 0.25rem;
+          }
+
+          :scope .new-task .text:empty {
+            cursor: text;
+          }
+
+          :scope .new-task .text:empty::after {
+            content: 'What needs doing?';
+            color: var(--neutral-400);
+          }
+        </style>
+
+        <${Task}
+          class="new-task"
+          textClass="text"
+          task=${{ text: '' }}
+          contenteditable
+          onblur=${(event) => {
             actions.addTask(lane, event.currentTarget.textContent);
             event.currentTarget.textContent = '';
-            event.preventDefault();
-          }
-        }}
-        data-title="What needs doing?"
-      />
+          }}
+          onkeypress=${(event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+              actions.addTask(lane, event.currentTarget.textContent);
+              event.currentTarget.textContent = '';
+              event.preventDefault();
+            }
+          }}
+        />
+      </div>
     <//>
 
     ${lane.tasks.map(

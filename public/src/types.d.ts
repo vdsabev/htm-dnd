@@ -1,3 +1,14 @@
+declare global {
+  interface Window {
+    app: {
+      board: Board;
+      itemBeingDragged?:
+        | { type: 'lane'; item: Lane }
+        | { type: 'task'; item: Task };
+    };
+  }
+}
+
 export interface Board {
   _id: string;
   lanes: Lane[];

@@ -89,26 +89,21 @@ const suite = {
   moveLane: {
     'should not move lane before itself'() {
       assert.deepStrictEqual(
-        actions.moveLane.call(data.withLanes, data.withLanes.lanes[0]._id, 0),
+        actions.moveLane.call(data.withLanes, data.withLanes.lanes[0], 0),
         data.withLanes
       );
     },
 
     'should not move lane after itself'() {
       assert.deepStrictEqual(
-        actions.moveLane.call(
-          data.withLanes,
-          data.withLanes.lanes[0]._id,
-          data.withLanes.lanes[0],
-          1
-        ),
+        actions.moveLane.call(data.withLanes, data.withLanes.lanes[0], 1),
         data.withLanes
       );
     },
 
     'should move first lane to the end'() {
       assert.deepStrictEqual(
-        actions.moveLane.call(data.withLanes, data.withLanes.lanes[0]._id, 1000),
+        actions.moveLane.call(data.withLanes, data.withLanes.lanes[0], 1000),
         {
           lanes: [
             data.withLanes.lanes[1],
@@ -123,7 +118,7 @@ const suite = {
       assert.deepStrictEqual(
         actions.moveLane.call(
           data.withLanes,
-          data.withLanes.lanes.at(-1)._id,
+          data.withLanes.lanes.at(-1),
           1000
         ),
         {
@@ -235,9 +230,9 @@ const suite = {
       assert.deepStrictEqual(
         actions.moveTask.call(
           data.withTasks,
-          data.withTasks.lanes[0].tasks[0]._id,
-          data.withTasks.lanes[0],
-          0
+          data.withTasks.lanes[0].tasks[0],
+          0,
+          data.withTasks.lanes[0]
         ),
         data.withTasks
       );
@@ -247,9 +242,9 @@ const suite = {
       assert.deepStrictEqual(
         actions.moveTask.call(
           data.withTasks,
-          data.withTasks.lanes[0].tasks[0]._id,
-          data.withTasks.lanes[0],
-          1
+          data.withTasks.lanes[0].tasks[0],
+          1,
+          data.withTasks.lanes[0]
         ),
         data.withTasks
       );
@@ -259,9 +254,9 @@ const suite = {
       assert.deepStrictEqual(
         actions.moveTask.call(
           data.withTasks,
-          data.withTasks.lanes[0].tasks[0]._id,
-          data.withTasks.lanes[0],
-          1000
+          data.withTasks.lanes[0].tasks[0],
+          1000,
+          data.withTasks.lanes[0]
         ),
         {
           lanes: [
@@ -282,9 +277,9 @@ const suite = {
       assert.deepStrictEqual(
         actions.moveTask.call(
           data.withTasks,
-          data.withTasks.lanes[0].tasks.at(-1)._id,
-          data.withTasks.lanes[0],
-          1000
+          data.withTasks.lanes[0].tasks.at(-1),
+          1000,
+          data.withTasks.lanes[0]
         ),
         data.withTasks
       );
@@ -294,9 +289,9 @@ const suite = {
       assert.deepStrictEqual(
         actions.moveTask.call(
           data.withTasks,
-          data.withTasks.lanes[0].tasks[0]._id,
-          data.withTasks.lanes[1],
-          0
+          data.withTasks.lanes[0].tasks[0],
+          0,
+          data.withTasks.lanes[1]
         ),
         {
           lanes: [

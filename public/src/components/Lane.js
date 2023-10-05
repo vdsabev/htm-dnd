@@ -3,22 +3,29 @@ import { html } from '../../lib/preact.js';
 import Dropzone from './Dropzone.js';
 import Task from './Task.js';
 
-export default ({ lane, actions }) => html`
+export default ({ lane, actions, ...props }) => html`
   <div
-    class="relative flex flex-col min-w-[var(--lane-width)] border rounded w-[var(--lane-width)] bg-slate-100 px-3 shadow-inner overflow-y-auto cursor-grab active:cursor-grabbing"
+    ...${props}
+    class="${props.class ||
+    ''} relative flex flex-col min-w-[var(--lane-width)] border rounded w-[var(--lane-width)] bg-slate-100 px-3 shadow-inner overflow-y-auto cursor-grab active:cursor-grabbing"
     draggable="true"
     ondragstart=${(event) => {
+      window.app.itemBeingDragged = { type: 'lane', item: lane };
       event.stopPropagation(); // Prevent parent node from receiving child events
-      event.dataTransfer.setData('text/plain', lane._id);
       event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', event.currentTarget.textContent); // Used when dragging into other apps
     }}
     ondragover=${(event) => {
       event.preventDefault(); // Prevent cursor from turning into not-allowed
     }}
+    ondragend=${() => {
+      window.app.itemBeingDragged = null;
+    }}
   >
     <${Dropzone}
+      type="task"
       direction="horizontal"
-      move=${(laneId) => actions.moveTask(laneId, 0)}
+      move=${(task) => actions.moveTask(task, 0, lane)}
     >
       <div class="pt-2">
         <span
@@ -74,8 +81,9 @@ export default ({ lane, actions }) => html`
             actions.updateTask(task, event.currentTarget.textContent)}
         />
         <${Dropzone}
+          type="task"
           direction="horizontal"
-          move=${(taskId) => actions.moveTask(taskId, lane, index + 1)}
+          move=${(task) => actions.moveTask(task, index + 1, lane)}
         />
       `
     )}

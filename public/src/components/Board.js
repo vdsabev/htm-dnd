@@ -5,16 +5,18 @@ import Lane from './Lane.js';
 
 export default ({ board, actions }) => html`
   <${Dropzone}
+    type="lane"
     direction="vertical"
-    move=${(laneId) => actions.moveLane(laneId, 0)}
+    move=${(lane) => actions.moveLane(lane, 0)}
   />
 
   ${board.lanes.map(
     (lane, index) => html`
       <${Lane} lane=${lane} actions=${actions} />
       <${Dropzone}
+        type="lane"
         direction="vertical"
-        move=${(laneId) => actions.moveLane(laneId, index + 1)}
+        move=${(lane) => actions.moveLane(lane, index + 1)}
       />
     `
   )}

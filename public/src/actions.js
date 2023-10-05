@@ -31,9 +31,8 @@ export default {
     };
   },
 
-  moveLane(/** @type {string} */ laneId, /** @type {number} */ toIndex) {
-    const fromIndex = this.lanes.findIndex((lane) => lane._id === laneId);
-    const lane = this.lanes[fromIndex];
+  moveLane(/** @type {Lane} */ lane, /** @type {number} */ toIndex) {
+    const fromIndex = this.lanes.indexOf(lane);
 
     return {
       lanes: insert(
@@ -67,14 +66,12 @@ export default {
   },
 
   moveTask(
-    /** @type {string} */ taskId,
-    /** @type {Lane} */ toLane,
-    /** @type {number} */ toIndex
+    /** @type {Task} */ task,
+    /** @type {number} */ toIndex,
+    /** @type {Lane} */ toLane
   ) {
-    const fromLane = this.lanes.find((lane) => lane.tasks.find(byId(taskId)));
-    const fromIndex = fromLane.tasks.findIndex(byId(taskId));
-
-    const task = fromLane.tasks[fromIndex];
+    const fromLane = this.lanes.find((lane) => lane.tasks.find(byId(task._id)));
+    const fromIndex = fromLane.tasks.indexOf(task);
 
     return {
       lanes: this.lanes

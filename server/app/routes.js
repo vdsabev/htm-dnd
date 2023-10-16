@@ -9,7 +9,12 @@ module.exports = {
     async get(request, response) {
       const board = await db.getBoard(request.params.boardId);
       return response.html(
-        await ejs.renderFile(`${process.cwd()}/public/index.html`, { board })
+        await ejs.renderFile(
+          process.env.NODE_ENV === 'development'
+            ? `${process.cwd()}/public/index.html`
+            : `${process.cwd()}/index.html`,
+          { board }
+        )
       );
     },
 

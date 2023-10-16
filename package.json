@@ -3,13 +3,9 @@
   "name": "htmx-dnd",
   "version": "1.0.0",
   "scripts": {
-    "start": "netlify dev --no-open",
+    "start": "npx netlify dev --no-open",
     "test": "node --watch public/src/actions.test.js",
     "test.once": "node public/src/actions.test.js"
-  },
-  "devDependencies": {
-    "concurrently": "8.2.1",
-    "netlify-cli": "16.5.1"
   },
   "dependencies": {
     "ejs": "3.1.9",

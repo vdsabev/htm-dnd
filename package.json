@@ -3,7 +3,7 @@
   "name": "htmx-dnd",
   "version": "1.0.0",
   "scripts": {
-    "start": "npx netlify dev --no-open",
+    "start": "netlify dev --no-open",
     "test": "node --watch public/src/actions.test.js",
     "test.once": "node public/src/actions.test.js"
   },
@@ -11,5 +11,8 @@
     "ejs": "3.1.9",
     "mongoose": "7.5.3",
     "pathern": "0.3.1"
+  },
+  "devDependencies": {
+    "netlify-cli": "16.7.0"
   }
 }

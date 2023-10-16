@@ -11,8 +11,8 @@ module.exports = {
       return response.html(
         await ejs.renderFile(
           process.env.NODE_ENV === 'development'
-            ? `${process.cwd()}/public/index.html`
-            : `${process.cwd()}/index.html`,
+            ? `${__dirname}/index.html`
+            : `${__dirname}/../index.html`,
           { board }
         )
       );

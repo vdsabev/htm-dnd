@@ -1,16 +1,16 @@
-const fs = require('fs');
 const ejs = require('ejs');
 
 const db = require('./db');
 const utils = require('./utils');
-const template = fs.readFileSync(`${__dirname}/index.html`, { encoding: 'utf8' });
 
 module.exports = {
   // Boards
   '/boards/:boardId': {
     async get(request, response) {
       const board = await db.getBoard(request.params.boardId);
-      return response.html(ejs.render(template, { board }));
+      return response.html(
+        await ejs.renderFile('./server/app/index.html', { board })
+      );
     },
 
     async patch(request, response) {

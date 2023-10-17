@@ -1,9 +1,12 @@
 [build]
-  functions = "server/"
   publish = "public/"
 
 [dev]
   port = 3000
+
+[functions]
+  directory = "server/"
+  included_files = ["./server/**/*.html"]
 
 [[redirects]]
   from = "/*"
